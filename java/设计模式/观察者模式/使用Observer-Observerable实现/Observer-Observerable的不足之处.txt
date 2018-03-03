@@ -1,5 +1,0 @@
-Observable是一个具体类，可拓展性较差
-
-Observable的setChanged()方法是一个被protected方法修饰的类，要想正确使用必须继承Observable
-
-Observable即可实现“推送数据”，也可实现“拉取数据”
