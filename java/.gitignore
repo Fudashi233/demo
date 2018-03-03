@@ -1,9 +1,9 @@
-# maven #
+# maven
 target/
 
-# IDEA #
+# IDEA
 .idea/
 *.iml
-out/
 
-.DS_Store
+# MAC
+*/.DS_Store
