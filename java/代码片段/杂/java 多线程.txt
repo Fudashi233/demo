@@ -1,0 +1,406 @@
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadFactory;
+
+public class Test1
+{
+	public static void main(String[] args)
+	{
+		Sleeper s1 = new Sleeper("s1",1500);
+		Sleeper s2 = new Sleeper("s2",1500);
+		Joiner j1 = new Joiner("j1",s1);
+		Joiner j2 = new Joiner("j2",s2);
+		s2.interrupt();
+	
+	}
+}
+
+class Sleeper extends Thread
+{
+	private long duration;
+	public Sleeper(String name,long duration)
+	{
+		super(name);
+		this.duration = duration;
+	    super.start();
+	}
+	public void run()
+	{
+		try
+		{
+			TimeUnit.MILLISECONDS.sleep(duration);
+		}
+		catch(InterruptedException ex)
+		{
+			System.out.println(super.getName()+"   "+ex);   //捕捉interrupt的调用所产生的异常
+		    return ;
+		}
+		System.out.println(super.getName()+" has awakened");
+	}
+}
+class Joiner extends Thread
+{
+	private Sleeper sleeper;
+	public Joiner(String name,Sleeper sleeper)
+	{
+		super(name);
+		this.sleeper = sleeper;
+		super.start();  //构造即start
+	}
+	public void run()
+	{
+		try
+		{
+			sleeper.join();  //sleeper线程join
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+		System.out.println(super.getName()+" completed");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.IOException;
+public class Test2 
+{
+	public static void main(String[] args) throws IOException
+	{
+		Responsive r = new Responsive();
+		//System.in.read();
+		System.out.println(r.getD());
+		System.in.read();
+		System.out.println(r.getD());
+	}
+}
+class Responsive extends Thread
+{
+	private double d = 1;
+	public Responsive()
+	{
+		//super.setDaemon(true);
+		super.start();
+	}
+	public void run()
+	{
+		while(true)
+			d = d+(Math.PI+Math.E)/d;
+	}
+	public double getD()
+	{
+		return this.d;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadFactory;
+
+public class Test1
+{
+	public static void main(String[] args)
+	{
+		Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
+		ExecutorService exec = Executors.newCachedThreadPool();
+		for(int i=0;i<5;i++)
+			exec.execute(new ExceptionTask());
+		exec.shutdownNow();
+	}
+}
+class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler   //接口
+{
+	public void uncaughtException(Thread thread,Throwable throwable)
+	{
+		System.out.println("caught "+thread);
+	}
+}
+class CatchExceptionThreadFactory implements ThreadFactory
+{
+	public Thread newThread(Runnable r)
+	{
+		Thread t = new Thread(r);
+		t.setUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
+		return t;
+	}	
+}
+class ExceptionTask implements Runnable
+{
+	public void run()
+	{
+		throw new RuntimeException();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Test1
+{
+    public static void main(String[] args)
+	{
+		EvenTask task = new EvenTask();
+		ExecutorService exec = Executors.newCachedThreadPool();
+		for(int i=0;i<5;i++)
+			exec.execute(task);
+		while(true)
+		{
+			if(task.getInt()%2!=0)
+			{
+				System.out.println(task.getInt());
+				System.out.println("Error");
+			}
+		}
+	}	
+}
+class EvenTask implements Runnable
+{
+	private AtomicInteger atomicInt;
+	public EvenTask()
+	{
+		atomicInt = new AtomicInteger(0);
+	}
+	public int getInt()
+	{
+		return atomicInt.get();
+	}
+	public void run()
+	{
+		while(true)
+            atomicInt.addAndGet(2);		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Test1
+{
+    public static void main(String[] args)
+	{
+		Task t = new Task();
+		ExecutorService exec = Executors.newCachedThreadPool();
+		for(int i=0;i<5;i++)
+			exec.execute(new Task());
+		try
+		{
+			TimeUnit.SECONDS.sleep(3);
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+		exec.shutdownNow();
+	}
+}
+
+class ThreadLocalHolder
+{
+	private static ThreadLocal<Integer> value = new ThreadLocal<Integer>()
+	                                                {
+		                                                protected Integer initialValue()
+														{
+															return (int)(Math.random()*100);
+														}
+	                                                };
+	public static void increment()
+	{
+		value.set(value.get()+1);
+	}
+	public static int get()
+	{
+		return value.get();
+	}
+}
+
+
+class Task implements Runnable
+{
+	private static int count = 0;
+	private final int id;
+	public Task()
+	{
+		id = count++;
+	}
+	public void run()
+	{
+		try
+		{
+			while(!Thread.currentThread().isInterrupted())
+		    {
+			    ThreadLocalHolder.increment();
+			    System.out.println(this);
+				TimeUnit.MILLISECONDS.sleep(250);
+		    }
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	public String toString()
+	{
+		return "---"+id+"   "+ThreadLocalHolder.get();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class Test1
+{
+	public static void main(String[] args)
+	{
+		Task1 t1 = new Task1();
+		Task2 t2 = new Task2();
+		ExecutorService exec = Executors.newCachedThreadPool();
+		exec.execute(t1);
+		exec.execute(t2);
+		try
+		{
+			TimeUnit.SECONDS.sleep(1);
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+		t1.b.bNotifyAll();  
+		/*
+		    wait()的锁是Task1中的数据域b，
+		    而且b是Task1中都是静态数据域，
+			所以notifyAll可以唤醒所有驱动Task1的线程。
+		*/
+	}
+}
+class Block
+{
+	public synchronized void bWait()
+	{
+		try
+		{
+			while(!Thread.interrupted())
+		    {
+			    wait();
+			    System.out.println(Thread.currentThread());
+		    }
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	public synchronized void bNotify()
+	{
+		notify();
+	}
+	public synchronized void bNotifyAll()
+	{
+		notifyAll();
+	}
+}
+class Task1 implements Runnable
+{
+	public static Block b = new Block();
+	public void run()
+	{
+		b.bWait();
+	}
+}
+class Task2 implements Runnable
+{
+	public static Block b = new Block();
+	public void run()
+	{
+		b.bWait();
+	}
+}

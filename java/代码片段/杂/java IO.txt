@@ -1,0 +1,693 @@
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+		final int SIZE = 1024;
+		ByteBuffer buff = ByteBuffer.allocate(SIZE);
+		FileChannel fcInput = new FileInputStream(new File("testFile.txt")).getChannel();
+		FileChannel fcOutput = new FileOutputStream(new File("haha.txt"),true).getChannel();
+		while((fcInput.read(buff))!=-1)
+		{
+			buff.flip();
+		    fcOutput.write(buff);
+			buff.clear();
+		}
+		fcInput.close();
+		fcOutput.close();
+	}
+}
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args)
+	{
+		Map<String,Charset> map = Charset.availableCharsets();
+		Iterator<String> kIterator = map.keySet().iterator();
+		while(kIterator.hasNext())
+		{
+			Object key = kIterator.next();	
+			Iterator<String> vIterator = map.get(key).aliases().iterator();
+			System.out.print(key+":");
+			while(vIterator.hasNext())
+				System.out.print(vIterator.next()+"\t");
+			System.out.println();
+			System.out.println();
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+	   IO1();
+	   IO2();
+	}
+    public static void IO1() throws IOException //在输入时对他进行编码
+	{
+		ByteBuffer buff = ByteBuffer.allocate(64);
+		FileChannel fcOutput = new FileOutputStream(new File("testFile.txt")).getChannel();
+		buff.asCharBuffer().put("Wo asdrd");  //encode
+		fcOutput.write(buff);
+		buff.clear();
+		fcOutput.close();
+		
+		FileChannel fcInput = new FileInputStream(new File("testFile.txt")).getChannel();
+		fcInput.read(buff);
+		buff.flip();
+		System.out.println(buff.asCharBuffer());
+	}
+	public static void IO2() throws IOException //在输出时对他进行译码
+	{
+		ByteBuffer buff = ByteBuffer.allocate(64);
+		String encoding = System.getProperty("file.encoding");
+		
+		Charset.forName(encoding).decode(buff);  //意义何在？
+		
+		FileChannel fcOutput = new FileOutputStream(new File("testFile.txt")).getChannel();
+		fcOutput.write(buff.wrap("Hello".getBytes("UTF-16BE")));//如果不译码文件中写入正确，读取时错误
+		buff.clear();   
+		fcOutput.close();
+		
+		FileChannel fcInput = new FileInputStream(new File("testFile.txt")).getChannel();
+		fcInput.read(buff);
+		buff.flip();
+		System.out.println(buff.asCharBuffer());
+	}
+}
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+ 		final int SIZE = 64;
+	    // ByteBuffer buff = ByteBuffer.allocate(SIZE);
+		// IntBuffer intBuff = buff.asIntBuffer();
+		
+		// intBuff.put(new int[]{1,2,3,4,5});    //在IntBuffer视图中写入数据
+		
+		// System.out.println("---"+intBuff.get(0)); //1
+		// intBuff.put(0,99);
+		// System.out.println("---"+intBuff.get(0)); //99
+		// intBuff.flip();   //不使用flip不会写入IntBuffer视图中
+ 		// while(intBuff.hasRemaining())
+		// {
+			// int i = intBuff.get();
+			// System.out.println(i);
+		// }
+		// System.out.println("---------------");
+		// while(buff.hasRemaining())
+		// {
+			// byte i = buff.get();
+			// System.out.println(i);
+		// } 
+		
+ 		ByteBuffer buff = ByteBuffer.allocate(SIZE);
+		buff.asIntBuffer().put(new int[]{1,2,3,4,5});
+		// while(buff.asIntBuffer().hasRemaining())
+		// {
+			// System.out.print("---");
+			// int i = buff.asIntBuffer().get();
+			// System.out.println(i);
+		// }
+		while(buff.hasRemaining())
+		{
+			byte i = buff.get();
+			System.out.println(i);
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import java.io.*;
+// import java.nio.*;
+// import java.nio.channels.*;
+// import java.util.*;
+// import java.nio.charset.*;
+// public class Test
+// {
+	// public static void main(String[] args) throws IOException
+	// {
+        // ByteBuffer buff = ByteBuffer.wrap(new byte[]{0,0,0,0,0,0,0,'a'});  //输出的效果跟byte数组的length有关
+		// System.out.println("----------");
+		// while(buff.hasRemaining())
+		// {
+			// System.out.print(buff.position()+"---"+buff.get()+"  ");
+		// }
+		// System.out.println("\n----------");
+		
+		// buff.rewind();
+		
+		// CharBuffer cBuff = buff.asCharBuffer();
+		// System.out.println("----------");
+		// while(cBuff.hasRemaining())
+		// {
+			// System.out.print(cBuff.position()+"---"+cBuff.get()+"  ");
+		// }
+		// System.out.println("\n----------");
+		
+		// buff.rewind();
+		// IntBuffer iBuff = buff.asIntBuffer();
+		// System.out.println("----------");
+		// while(iBuff.hasRemaining())
+		// {
+			// System.out.print(iBuff.position()+"---"+iBuff.get()+"  ");
+			
+		// }
+		// System.out.println("\n---------");
+	// }
+// }
+
+
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+        String st = "Hello world";
+		ByteBuffer buff = ByteBuffer.allocate(st.length()*2);
+		CharBuffer cBuff = buff.asCharBuffer();
+		cBuff.put(st);
+		cBuff.rewind();
+		
+		while(cBuff.hasRemaining())
+		{
+			cBuff.mark();
+			char c1 = cBuff.get();
+			char c2 = '\0';
+		    if(cBuff.hasRemaining())
+			    c2 = cBuff.get();
+			cBuff.reset();
+			System.out.println(c1+"---"+c2);
+			if(c2 == '\0')
+				cBuff.put(c1);
+			else
+				cBuff.put(c2).put(c1);
+			
+		}
+		
+		cBuff.rewind();
+		while(cBuff.hasRemaining())
+		{
+			System.out.println("--- "+cBuff.get());
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+		final int SIZE = 1024;
+		File dir = new File("testFile.txt");
+        RandomAccessFile r = new RandomAccessFile(dir,"rw");		
+		MappedByteBuffer buff = r.getChannel().map(FileChannel.MapMode.READ_WRITE,0,SIZE);
+		int i = 0;
+		for(;i<5;i++)
+			buff.get();
+		for( ;i<10;i++)
+			buff.put((byte)98);
+	}   
+}
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.zip.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+		// File inDir = new File("testFile.txt");
+		// File outDir = new File("testFile1.gz");
+	    // BufferedInputStream inputStream = new BufferedInputStream(
+		                                      // new FileInputStream(inDir));
+		// BufferedOutputStream outputStream = new BufferedOutputStream(
+		                                       // new GZIPOutputStream(
+											       // new FileOutputStream(outDir)));
+	    // int temp = -1;
+		// while((temp = inputStream.read())!=-1)
+		// {
+			// outputStream.write(temp);
+		// }
+		// inputStream.close();
+		// outputStream.close();
+	    //=====================================//
+	    BufferedInputStream inputStream = new BufferedInputStream(
+		                                      new GZIPInputStream(
+											      new FileInputStream(
+												      new File("testFile.gz"))));
+		int temp = -1;
+		while((temp = inputStream.read())!=-1)
+		{
+			System.out.print((char)temp);
+		}
+	    input.close();									  
+													  
+	}   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.zip.*;
+import java.nio.charset.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+		File dir1 = new File("haha.txt");
+		File dir2 = new File("testFile.txt");
+		File[] fileArr = {dir1,dir2};
+
+		ZipOutputStream zos = new ZipOutputStream(
+		                          new CheckedOutputStream( 
+								      new FileOutputStream("test.zip"),new Adler32()));
+		zos.setComment("Test zip.");
+		BufferedOutputStream outputStream = new BufferedOutputStream(zos);
+	    for(int i=0;i<fileArr.length;i++)
+		{
+			zos.putNextEntry(new ZipEntry(fileArr[i].toString()));
+			BufferedInputStream inputStream = new BufferedInputStream(
+			                                      new FileInputStream(fileArr[i]));
+			int temp = -1;
+			while((temp = inputStream.read())!=-1)
+			{
+				outputStream.write(temp);
+			}
+			inputStream.close();
+			outputStream.flush();
+		}
+		outputStream.close();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.zip.*;
+import java.nio.charset.*;
+import java.util.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException
+	{
+		File dir1 = new File("haha.txt");
+		File dir2 = new File("testFile.txt");
+		File[] fileArr = {dir1,dir2};
+		CheckedOutputStream cos = new CheckedOutputStream(new FileOutputStream("test.zip"),new Adler32());
+		ZipOutputStream zos = new ZipOutputStream(cos);
+		zos.setComment("Test zip.");
+		BufferedOutputStream outputStream = new BufferedOutputStream(zos);
+	    for(int i=0;i<fileArr.length;i++)
+		{
+			zos.putNextEntry(new ZipEntry(fileArr[i].toString()));
+			BufferedInputStream inputStream = new BufferedInputStream(
+			                                      new FileInputStream(fileArr[i]));
+			int temp = -1;
+			while((temp = inputStream.read())!=-1)
+			{
+				outputStream.write(temp);
+			}
+			inputStream.close();
+			outputStream.flush();
+		}
+		outputStream.close();
+		zos.close();
+		cos.close();
+		
+		//System.out.println(cos.getChecksum().getValue());
+		CheckedInputStream cis = new CheckedInputStream(new FileInputStream("test.zip"),new CRC32());
+		ZipInputStream zis = new ZipInputStream(cis);
+		BufferedInputStream inputStream = new BufferedInputStream(zis);
+		ZipEntry ze ;
+		while((ze = zis.getNextEntry())!=null)
+		{
+			System.out.println("----"+ze);
+			int temp = -1;
+			while((temp = inputStream.read())!=-1)
+				System.out.print((char)temp);
+			System.out.println("");
+		}
+		inputStream.close();
+		zis.close();
+		cis.close();
+		
+		
+		ZipFile zf = new ZipFile("test.zip");
+		Enumeration<? extends ZipEntry> e = zf.entries();
+		while(e.hasMoreElements())
+		{
+			ZipEntry zee = e.nextElement();
+			System.out.println("File:"+zee);
+		}
+		
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.zip.*;
+import java.nio.charset.*;
+import java.util.*;
+public class Test
+{
+	public static void main(String[] args) throws IOException,ClassNotFoundException
+	{
+		// TestObject t = new TestObject();
+		// t.setCount(5);
+        // ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("testFile.txt"));
+		// outputStream.writeObject(t);
+		// t.serializableStaticState(outputStream);
+		// outputStream.close();
+		
+			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("testFile.txt"));
+			TestObject t1 = (TestObject)inputStream.readObject();
+			t1.deserializableStaticState(inputStream);
+			System.out.println(t1.count);
+	}
+}
+// class TestObject implements Serializable
+// {
+	// private static int a;
+	// private transient double b;
+	// private String c;
+	// public TestObject(int a,double b,String c)
+	// {
+		// this.a = a;
+		// this.b = b;
+		// this.c = c;
+	// }
+	// public String toString()
+	// {
+		// return ""+this.a+"   "+this.b+"   "+this.c;
+	// }
+	// private void writeObject(ObjectOutputStream out) throws IOException   //defaultWriteObject（）完成serializable的序列化机制，但可自行突破
+	// {
+        // out.defaultWriteObject();
+        // out.writeDouble(b);		
+	// }
+	// private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException
+	// {
+		// in.defaultReadObject();
+		// b = in.readDouble();
+	// }
+// }
+
+
+
+// class TestObject implements Externalizable
+// {
+	// private int a;
+	// private double b;    //Externalizable 会突破transient给的限制
+	// private String c;
+	// public TestObject()   //一定要默认构造函数，不然会报错   
+	// {
+	       // System.out.println("--- public TestObject()");
+	// }
+	// public TestObject(int a,double b,String c)
+	// {
+		// System.out.println("--- public TestObject(int a,double b,String c)");
+		// this.a = a;
+		// this.b = b;
+		// this.c = c;
+	// }
+	// public String toString()
+	// {
+		// return ""+this.a+"   "+this.b+"   "+this.c;
+	// }
+	// public void readExternal(ObjectInput in)  throws IOException,ClassNotFoundException
+	// {
+		// System.out.println("readExternal");
+		// a = in.readInt();
+		// b = in.readDouble();
+		// c = (String)in.readObject();
+	// }
+	// public void writeExternal(ObjectOutput out) throws IOException
+	// {
+		// System.out.println("writeExternal");
+		// out.writeInt(a);
+		// out.writeDouble(b);
+		// out.writeObject(c);
+	// }
+// }
+
+class TestObject implements Serializable
+{
+	public static int count = 1;
+	public void setCount(int i)
+	{
+		this.count = i;
+	}
+	public void serializableStaticState(ObjectOutputStream out) throws IOException
+	{
+		out.writeInt(count);
+	}
+	public void deserializableStaticState(ObjectInputStream in) throws IOException
+	{
+		count = in.readInt();
+	}
+}
+
+
+
+
+
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+
+public class Test
+{
+	public static void main(String[] args) throws IOException   
+    {   
+		FileInputStream input  = new FileInputStream("sample.txt");
+		FileChannel channel = input.getChannel();
+		ByteBuffer byteBuffer = ByteBuffer.allocate(256);
+		channel.read(byteBuffer);
+		byteBuffer.flip();
+		System.out.println(byteBuffer.asCharBuffer());	//乱码，因为ByteBuffer中存储的是普通的字节
+		CharBuffer charBuffer = byteBuffer.asCharBuffer();
+		while(charBuffer.hasRemaining())
+		{
+			System.out.print(charBuffer.get());	//乱码，因为ByteBuffer中存储的是普通的字节
+		}
+		System.out.println();
+		while(byteBuffer.hasRemaining())
+		{
+			System.out.print((char)byteBuffer.get());
+		}
+		//---------在读出数据时进行解码----------//
+		
+		String encode = System.getProperty("file.encoding");	//GBK
+		Charset charSet = Charset.forName(encode);
+		System.out.println(charSet.decode(byteBuffer));			//OK
+		
+		//----------------------------------//
+
+		//---------------在写入数据时进行编码-------------------//
+		FileOutputStream output = new FileOutputStream("sample.txt");
+		FileChannel outChannel = output.getChannel();
+		outChannel.write(ByteBuffer.wrap("some text".getBytes("UTF-16BE")));	//windows下一定要是这个
+		
+		FileInputStream input = new FileInputStream("sample.txt");
+		FileChannel inputChannel = input.getChannel();
+		ByteBuffer byteBuffer = ByteBuffer.allocate(512);
+		inputChannel.read(byteBuffer);
+		byteBuffer.flip();
+		System.out.println(byteBuffer.asCharBuffer());
+		//----------------------------------//
+
+		//--------------用CharBuffer视图缓存器进行缓存--------------------//		
+		FileOutputStream output = new FileOutputStream("sample.txt");
+		FileChannel outChannel = output.getChannel();
+		ByteBuffer byteBuffer = ByteBuffer.allocate(512);
+		byteBuffer.asCharBuffer().put("some text");
+		outChannel.write(byteBuffer);
+		output.close();
+		FileInputStream input = new FileInputStream("sample.txt");
+		FileChannel inputChannel = input.getChannel();
+		inputChannel.read(byteBuffer);
+		byteBuffer.flip();
+		System.out.println(byteBuffer.asCharBuffer());
+		//----------------------------------//
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+import java.util.Scanner;
+import java.io.PrintWriter;
+import java.io.File;
+public class a
+{
+	public static void main(String[] args) throws Exception
+	{
+		File file1=new File("code1.txt");
+		File file2=new File("code2.txt");
+		Scanner fileInput=new Scanner(file1);
+		PrintWriter fileOutput=new PrintWriter(file2);
+		while(fileInput.hasNext())
+		{
+			String st=fileInput.nextLine();
+            if(st.indexOf('{')!=-1)
+				fileOutput.println("{");
+			if(st.indexOf('}')!=-1)
+				fileOutput.println("\r\n"+st);
+			if(st.indexOf('{')==-1&&st.indexOf('}')==-1)
+				fileOutput.print(st);
+		}
+		fileInput.close();
+		fileOutput.close();
+	}
+}

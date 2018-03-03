@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>web</display-name>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/404.jsp</location>
+  </error-page>
+  
+  <servlet>
+    <servlet-name>InitServlet</servlet-name>
+    <servlet-class>cn.edu.jxau.web.servlet.InitServlet</servlet-class>
+    <init-param>
+    	<param-name>powerConfig</param-name>
+    	<param-value>power.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>cn.edu.jxau.web.servlet.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
+  
+  <filter>
+    <filter-name>PowerFilter</filter-name>
+    <filter-class>cn.edu.jxau.web.filter.PowerFilter</filter-class>
+  	<init-param>
+  		<param-name></param-name>
+  		<param-value></param-value>
+  	</init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>PowerFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+</web-app>

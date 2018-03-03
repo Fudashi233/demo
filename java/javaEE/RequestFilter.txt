@@ -1,0 +1,141 @@
+package cn.edu.jxau.web;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+public class RequestFilter implements Filter 
+{
+	private FilterConfig fConfig;
+	public RequestFilter()
+    {
+    	
+    }
+	public void destroy() 
+	{
+		
+	}
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException 
+	{
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html");
+		chain.doFilter(new InnerRequest((HttpServletRequest) request), response);
+		response.getWriter().println("hello world");
+		System.out.println("42--- ");
+	}
+	public void init(FilterConfig fConfig) throws ServletException 
+	{
+		this.fConfig = fConfig;
+	}
+	public List<String> getDirtyWord()
+	{
+		BufferedReader reader = null;
+		ArrayList<String> dirtyWord = new ArrayList<String>();
+		try
+		{
+			String path = fConfig.getInitParameter("dirtyWord");
+			InputStream inputStream = fConfig.getServletContext().getResourceAsStream(path);
+			reader = new BufferedReader(new InputStreamReader(inputStream));
+			String line = "";
+			while( (line = reader.readLine())!=null )
+			{
+				dirtyWord.add(line);
+			}
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
+		}
+		return dirtyWord;
+	}
+	private class InnerRequest extends HttpServletRequestWrapper
+	{
+		private HttpServletRequest request;
+		private static final String REPLACE = "***";
+		public InnerRequest(HttpServletRequest request) 
+		{
+			super(request);
+			this.request = request;
+		}
+		@Override
+		public String getParameter(String name)
+		{
+			String result = request.getParameter(name);
+			if(result==null)
+				return null;
+			if(request.getMethod().equalsIgnoreCase("get"))
+			{
+				try
+				{
+					result = new String(result.getBytes("ISO8859-1"),"UTF-8");
+				} 
+				catch (UnsupportedEncodingException e)
+				{
+					e.printStackTrace();
+				}	
+			}
+			result = escape(result);
+			return filter(result);
+		}
+		private String escape(String content)
+		{
+			StringBuilder builder = new StringBuilder();
+			char tempCh = ' ';
+			for(int i=0,len=content.length();i<len;i++)
+			{
+				tempCh = content.charAt(i);
+				if(tempCh == '<')
+				{
+					builder.append("&lt;");
+				}
+				else if(tempCh == '>')
+				{
+					builder.append("&gt;");
+				}
+				else if(tempCh == '&')
+				{
+					builder.append("&amp;");
+				}
+				else if(tempCh == '"')
+				{
+					builder.append("&quot;");
+				}
+				else
+				{
+					builder.append(tempCh);
+				}
+			}
+			return builder.toString();
+		}
+		private String filter(String content)
+		{
+			ArrayList<String> dirtyWord = (ArrayList<String>) getDirtyWord();
+			for(int i=0,size = dirtyWord.size();i<size;i++)
+			{
+				if(content.contains(dirtyWord.get(i)))
+				{
+					content = content.replace(dirtyWord.get(i),REPLACE);
+				}
+			}
+			return content;
+		}
+	}
+}

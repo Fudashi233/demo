@@ -1,0 +1,113 @@
+import javax.swing.JApplet;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import java.awt.Graphics;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+public class TreePane<T> extends JApplet
+{
+	private Tree<Integer> tree;
+	private JButton insert;
+	private JButton delete;
+	private JTextField number;
+	public TreePane()
+	{
+		Integer[] array={5,4,7,2,6};
+		tree=new Tree<Integer>(array);
+		insert=new JButton("Insert");
+		delete=new JButton("Delete");
+		number=new JTextField(10);
+		JPanel p1=new JPanel();
+		p1.add(number);
+		p1.add(insert);
+		p1.add(delete);
+		
+		MyPanel p=new MyPanel();
+		
+		this.add(p,BorderLayout.CENTER);
+		this.add(p1,BorderLayout.SOUTH);
+		
+		insert.addActionListener(
+		                            new ActionListener()
+									{
+										public void actionPerformed(ActionEvent e)
+										{
+											int num=Integer.parseInt(number.getText());
+											tree.insert(new TNode<Integer>(num));
+											repaint();
+										}
+									}
+		                        );
+		delete.addActionListener(
+		                            new ActionListener()
+									{
+										public void actionPerformed(ActionEvent e)
+										{
+											int num=Integer.parseInt(number.getText());
+											tree.delete(new TNode<Integer>(num));
+											repaint();
+										}
+									}
+		                        );
+	}
+    class MyPanel extends JPanel
+    {
+	    private int radius=20;
+	    private int vGap=50;
+	    public MyPanel()
+	    {
+		    radius=20;
+		    vGap=50;
+	    }
+	    public MyPanel(int r,int v)
+	    {
+		    radius=r;
+		    vGap=v;
+	    }
+	    protected void paintComponent(Graphics g)
+	    {
+		    super.paintComponent(g);
+		    if(tree.root!=null)
+			   displayTree(g,tree.getRoot(),this.getWidth()/2,30,this.getWidth()/4);
+	    }
+	    public void displayTree(Graphics g,TNode<Integer> root,int x,int y,int hGap)
+	    {
+		    g.drawOval(x-radius,y-radius,radius*2,radius*2);
+		    g.drawString(String.valueOf(root.data),x-6,y+4);
+            if(root.left!=null)
+		    {
+			    connectLeft(g,x,y,x-hGap,y+vGap);
+			    displayTree(g,root.left,x-hGap,y+vGap,hGap/2);
+		    }
+            if(root.right!=null)
+		    {
+			    connectRight(g,x,y,x+hGap,y+vGap);
+			    displayTree(g,root.right,x+hGap,y+vGap,hGap/2);
+		    }			
+    	}
+	    public void connectLeft(Graphics g,int x1,int y1,int x2,int y2)
+	    {
+		    double d=Math.sqrt(vGap*vGap+(x1-x2)*(x1-x2));
+		    int incrementX=(int)((Math.abs(x1-x2)/d)*radius);
+		    int incrementY=(int)((vGap/d)*radius);
+		    x1=x1-incrementX;
+		    y1=y1+incrementY;
+		    x2=x2+incrementX;
+		    y2=y2-incrementY;
+		    g.drawLine(x1,y1,x2,y2);
+	    }
+	    public void connectRight(Graphics g,int x1,int y1,int x2,int y2)
+	    {
+		    double d=Math.sqrt(vGap*vGap+(x1-x2)*(x1-x2));
+		    int incrementX=(int)((Math.abs(x1-x2)/d)*radius);
+		    int incrementY=(int)((vGap/d)*radius);
+		    x1=x1+incrementX;
+		    y1=y1+incrementY;
+		    x2=x2-incrementX;
+		    y2=y2-incrementY;
+		    g.drawLine(x1,y1,x2,y2);
+	    }
+    } 
+}

@@ -1,0 +1,38 @@
+public class Test
+{
+    public static void main(String[] args)
+	{
+	    Maxtoria m = new Maxtoria(10);
+		m.print();
+	}
+}
+class Maxtoria
+{
+    int[][] maxtoria;
+	public Maxtoria()
+	{
+	    maxtoria = new int[1][1];
+		maxtoria[0][0] = 1;
+	}
+	public Maxtoria(int n)
+	{
+	    maxtoria = new int[n][n];
+		for(int i=0;i<(n+1)/2;i++)
+		{
+		    for(int j=i;j<maxtoria.length-i;j++)
+			{
+			    for(int k=i;k<maxtoria[j].length-i;k++)
+				{
+				    maxtoria[j][k] = i+1;
+				}
+			}
+		}
+	}
+	public void print()
+	{
+		for(int i=0;i<maxtoria.length;i++)
+		{
+			System.out.println(java.util.Arrays.toString(maxtoria[i]));
+		}
+	}
+}

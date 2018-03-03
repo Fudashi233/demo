@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	<bean id="userService" class="cn.edu.jxau.service.UserService" />
+	<bean id="logAdvice" class="cn.edu.jxau.advice.LogAdvice" />
+	
+	
+<!-- 	<aop:config>
+		<aop:pointcut id="userServicePointcut" expression="execution(* cn.edu.jxau.service.UserService.*())" />
+		{@bean logAdvice必需是一系列Spring API的实现类}
+		<aop:advisor advice-ref="logAdvice" pointcut-ref="userServicePointcut" />
+	</aop:config> -->
+	
+	
+<!-- 	<aop:config>
+		{@bean logAdvice无需是一系列Spring API的实现类，可以是一个普通的Java类}
+		<aop:aspect ref="logAdvice">
+			<aop:pointcut id="logAdvicePointcut"  expression="execution(* cn.edu.jxau.service.UserService.*(..))" />
+			<aop:before pointcut-ref="logAdvicePointcut" method="logBefore" />
+		</aop:aspect>
+	</aop:config> -->
+	
+	<aop:aspectj-autoproxy />
+	<!-- 	@Aspect
+	public class LogAdvice {
+		
+		@Before("execution(* cn.edu.jxau.service.UserService.insert())")
+		public void before() {
+			System.out.println("before execute");
+		}
+		
+		@After("execution(* cn.edu.jxau.service.UserService.insert())")
+		public void after() {
+			System.out.println("after execute");
+		}
+		
+		@Around("execution(* cn.edu.jxau.service.UserService.insert())")
+		public Object insert(ProceedingJoinPoint joinPoint) throws Throwable {
+			System.out.println("before around");
+			Object result = joinPoint.proceed();
+			System.out.println("after around");
+			return result;
+		}
+	} -->
+
+</beans>

@@ -1,0 +1,61 @@
+//记得释放数据库！！！！！！！！！
+package cn.edu.jxau;
+
+import java.util.Date;
+
+import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+
+public class JDBCTest
+{
+	public static void main(String[] args)
+	{
+		Date d = null;
+		try
+		{
+			//setDate(new Date());
+			d=getDate();
+		}
+		catch(ClassNotFoundException ex)
+		{
+			System.out.println(ex);
+		}
+		catch(SQLException ex)
+		{
+			System.out.println(ex);
+		}
+		System.out.println(d);
+	}
+	public static void setDate(Date d) throws SQLException,ClassNotFoundException
+	{
+		String url = "jdbc:mysql://localhost:3306/test";
+		String user = "root";
+		String password = "4869";
+		String className = "com.mysql.jdbc.Driver";
+	    String sql = "INSERT INTO time VALUES(?)";
+		Class.forName(className);
+		Connection c = DriverManager.getConnection(url,user,password);
+		PreparedStatement p =c.prepareStatement(sql);
+		p.setObject(1,new java.sql.Date(d.getTime()));
+		p.executeUpdate();
+	}
+	public static Date getDate() throws SQLException,ClassNotFoundException
+	{
+		String url = "jdbc:mysql://localhost:3306/test";
+		String user = "root";
+		String password = "4869";
+		String sql = "SELECT NOW()";
+		String className = "com.mysql.jdbc.Driver";
+		Class.forName(className);
+		Connection c = DriverManager.getConnection(url,user,password);
+		Statement s = c.createStatement();
+		ResultSet r = s.executeQuery(sql);
+		r.next();
+		java.sql.Date d= r.getDate(1);
+		return new Date(d.getTime());
+	}
+}

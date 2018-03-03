@@ -1,0 +1,44 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title></title>
+<style>#BAIDU_DSPUI_FLOWBAR,.adsbygoogle,.ad,div[class^="ad-widsget"],div[id^="div-gpt-ad-"],a[href*="@"][href*=".exe"],a[href*="/?/"][href*=".exe"],.adpushwin{display:none !important;}</style><style id="system" type="text/css">h1,h2,h3,h4,h5,h6,p,blockquote {    margin: 0;    padding: 0;}body {    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;    font-size: 13px;    line-height: 18px;    color: #737373;    margin: 10px 13px 10px 13px;}a {    color: #0069d6;}a:hover {    color: #0050a3;    text-decoration: none;}a img {    border: none;}p {    margin-bottom: 9px;}h1,h2,h3,h4,h5,h6 {    color: #404040;    line-height: 36px;}h1 {    margin-bottom: 18px;    font-size: 30px;}h2 {    font-size: 24px;}h3 {    font-size: 18px;}h4 {    font-size: 16px;}h5 {    font-size: 14px;}h6 {    font-size: 13px;}hr {    margin: 0 0 19px;    border: 0;    border-bottom: 1px solid #ccc;}blockquote {    padding: 13px 13px 21px 15px;    margin-bottom: 18px;    font-family:georgia,serif;    font-style: italic;}blockquote:before {    content:"C";    font-size:40px;    margin-left:-10px;    font-family:georgia,serif;    color:#eee;}blockquote p {    font-size: 14px;    font-weight: 300;    line-height: 18px;    margin-bottom: 0;    font-style: italic;}code, pre {    font-family: Monaco, Andale Mono, Courier New, monospace;}code {    background-color: #fee9cc;    color: rgba(0, 0, 0, 0.75);    padding: 1px 3px;    font-size: 12px;    -webkit-border-radius: 3px;    -moz-border-radius: 3px;    border-radius: 3px;}pre {    display: block;    padding: 14px;    margin: 0 0 18px;    line-height: 16px;    font-size: 11px;    border: 1px solid #d9d9d9;    white-space: pre-wrap;    word-wrap: break-word;}pre code {    background-color: #fff;    color:#737373;    font-size: 11px;    padding: 0;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style></head>
+<body><h1>堆移除处理</h1>
+<h2>源码</h2>
+<pre><code class="lang-java">package test;
+
+import java.util.Vector;
+
+public class Test {
+
+    public static void main(String[] args) {
+
+        Vector v = new Vector();
+        for(int i=0;i&lt;25;i++) {
+            v.add(new byte[1*1024*1024]); //1M
+        }
+    }
+}</code></pre>
+<h2>VM arguments</h2>
+<p>-XX:+PrintCommandLineFlags
+-Xmx20m
+-Xms20m
+-XX:+HeapDumpOnOutOfMemoryError
+
+</p>
+<h2>console</h2>
+<p>-XX:+HeapDumpOnOutOfMemoryError -XX:InitialHeapSize=20971520 -XX:MaxHeapSize=20971520 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC 
+</p>
+<hr>
+<p>java.lang.OutOfMemoryError: Java heap space
+Dumping heap to java_pid12188.hprof ...
+Heap dump file created [20061147 bytes in 0.059 secs]
+</p>
+<hr>
+<p>Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+    at test.Test.main(Test.java:11)
+
+</p>
+<p>这会在当前项目下生成一个.hprof文件，需用专门的工具打开，利用<code>-XX:HeapDumpPath</code>
+可以指定路径。<code>-XX:OnOutOfMemoryError</code>可以指定当OOM发生时执行的脚本
+Edit By <a href="http://mahua.jser.me">MaHua</a></p>
+</body></html>

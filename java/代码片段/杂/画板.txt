@@ -1,0 +1,143 @@
+package cn.edu.jxau;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.BasicStroke;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class Test
+{
+    public static void main(String[] args)
+    {
+    	JFrame drawFrame = new DrawFrame("Draw frame");
+    }
+}
+class DrawFrame extends JFrame
+{
+	private JPanel drawPanel;
+	private JRadioButton pencil;
+	private JRadioButton rubber;
+	private JRadioButton rectangle;
+	private JRadioButton oval;
+	private ButtonGroup group;
+	public DrawFrame(String title)
+	{
+		drawPanel = new JPanel();
+		drawPanel.setBackground(Color.WHITE);
+		drawPanel.setPreferredSize(new Dimension(300,400));
+		pencil = new JRadioButton("Line",true);
+		pencil.setActionCommand("line");
+		rubber = new JRadioButton("Rubber");
+		rubber.setActionCommand("rubber");
+		rectangle = new JRadioButton("Rectangle");
+		rectangle.setActionCommand("rectangle");
+		oval = new JRadioButton("Oval");
+		oval.setActionCommand("oval");
+	    group = new ButtonGroup();
+		group.add(pencil);
+		group.add(rubber);
+		group.add(rectangle);
+		group.add(oval);
+		
+		setUI();
+		addListener();
+	}
+	private void setUI()
+	{
+		
+		JPanel p1 = new JPanel(new GridLayout(0,1,0,0));
+		p1.add(pencil);
+		p1.add(rubber);
+		p1.add(rectangle);
+		p1.add(oval);
+		
+		JPanel p2 = new JPanel(new BorderLayout());
+		
+		p2.add(drawPanel,BorderLayout.CENTER);
+		p2.add(p1,BorderLayout.WEST);
+		
+		this.add(p2);
+		this.setVisible(true);
+		this.setLocationRelativeTo(null);
+		this.pack();
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	private void addListener()
+	{
+		drawPanel.addMouseListener(
+				                       new DrawListener(drawPanel.getGraphics(),group)
+				                  );
+		drawPanel.addMouseMotionListener(
+				                            new DrawListener(drawPanel.getGraphics(),group)
+				                        );
+	}
+}
+class DrawListener extends MouseAdapter
+{
+	private Graphics graphics;
+	private ButtonGroup group;
+	private int x1;
+	private int y1;
+	private int x2;
+	private int y2;
+	private String command;
+	public DrawListener(Graphics graphics,ButtonGroup group)
+	{
+		this.graphics = graphics;
+		this.group = group;
+		
+	}
+	public void mousePressed(MouseEvent e)
+	{
+		x1 = e.getX();
+		y1 = e.getY();
+		command = group.getSelection().getActionCommand();
+	}
+	public void mouseReleased(MouseEvent e)
+	{
+		x2 = e.getX();
+		y2 = e.getY();
+		int x = x1<x2?x1:x2;
+		int y = y1<y2?y1:y2;
+		int width = Math.abs(x1-x2);
+		int height = Math.abs(y1-y2);
+		if(command.equals("line"))
+		{
+			graphics.drawLine(x1,y1,x2,y2);
+		}
+		else if(command.equals("rectangle"))
+		{
+			graphics.drawRect(x,y,width,height);
+		}
+		else if(command.equals("oval"))
+		{
+			graphics.drawOval(x,y,width,height);
+		}
+	}
+	public void mouseDragged(MouseEvent e)
+	{
+		x2 = e.getX();
+		y2 = e.getY();
+		command = group.getSelection().getActionCommand();
+		if("rubber".equals(command))
+		{
+			graphics.setColor(Color.WHITE);   				    		
+	        Graphics2D g2d=(Graphics2D)graphics;
+	        g2d.setStroke(new BasicStroke(8));
+	        g2d.drawLine(x1, y1, x2, y2);
+	        x1=x2;
+	        y1=y2;
+		}
+	}
+}

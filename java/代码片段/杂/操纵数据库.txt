@@ -1,0 +1,112 @@
+package cn.edu.jxau;
+
+import javax.swing.JApplet;
+import javax.swing.JPanel;
+
+import java.awt.Graphics;
+import java.awt.Color;
+
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
+
+import java.util.ArrayList;
+public class JDBCTest extends JApplet
+{
+	private Panel p;
+	public JDBCTest()
+    {
+		int[] a=null;
+		try
+		{
+			Object[] temp=connectDatabase();
+			a=new int[temp.length];
+			for(int i=0;i<temp.length;i++)
+			    a[i]=(int)temp[i];
+		}
+		catch(SQLException ex)
+		{
+			System.out.println(ex);
+		}
+		p=new Panel(a);
+    	setUI();
+    }
+    public void setUI()
+    {
+    	this.add(p);
+    }
+    public Object[] connectDatabase() throws SQLException
+    {
+    	String url="jdbc:mysql://localhost/test";
+    	String user="root";
+    	String password="4869";
+    	String sql="SELECT sDept,COUNT(*) FROM student GROUP BY sDept";
+    	com.mysql.jdbc.Driver d=new com.mysql.jdbc.Driver();
+    	Connection connection=DriverManager.getConnection(url,user,password);
+    	Statement statement=connection.createStatement();
+    	ResultSet resultSet=statement.executeQuery(sql);
+    	ArrayList<Integer> list=new ArrayList<Integer>();
+    	while(resultSet.next())
+    	{
+    		list.add(resultSet.getInt(2));
+
+    	}
+    	connection.close();
+    	return list.toArray();
+    }
+}
+class Panel extends JPanel
+{
+	private int[] array;
+	public Panel(int[] array)
+	{
+		this.array=new int[array.length];
+		this.array=array.clone();
+	}
+	public int getSum()
+	{
+		int sum=0;
+		for(int i=0;i<this.array.length;i++)
+			sum+=array[i];
+		return sum;
+	}
+	public int getSumDegree(int count,int[] degreeSum)
+	{
+		int sumDegree=0;
+		for(int i=0;i<count;i++)
+			sumDegree+=degreeSum[i];
+		return sumDegree;
+	}
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		int xCenter=this.getWidth()/2;
+		int yCenter=this.getHeight()/2;
+		int degree=360/this.getSum();
+		int[] degreeArray=new int[array.length];
+		for(int i=0;i<degreeArray.length;i++)
+		{
+			degreeArray[i]=degree*array[i];
+		}
+		for(int i=0;i<degreeArray.length;i++)
+		{   
+			g.setColor(this.getColor(i));
+			g.fillArc(xCenter-200,yCenter-200,400,400,this.getSumDegree(i,degreeArray),degreeArray[i]);
+		}
+	}
+	public Color getColor(int i)
+	{
+		switch(i%5)
+		{
+		    case 0:return Color.GREEN;
+		    case 1:return Color.YELLOW;
+		    case 2:return Color.RED;
+		    case 3:return Color.BLUE;
+		    case 4:return Color.PINK;
+		    default:System.exit(0);
+		}
+		return null;
+	}
+}

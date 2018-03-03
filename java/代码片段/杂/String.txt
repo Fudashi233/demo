@@ -1,0 +1,91 @@
+public class a
+{
+	public static void main(String[] args)
+	{
+		myString S=myString.valueOf(123);
+		S.out();
+	}
+}
+class myString
+{
+	private char[] string_=new char[0];
+	myString(char[] st)
+	{
+		int i=0;
+		string_=new char[st.length];
+		for( ;i<st.length;i++)
+			string_[i]=st[i];
+	}
+	myString()
+	{
+		
+	}
+	char charAt(int i)
+	{
+		if(i>=string_.length||i<0)
+			System.out.println("charAt---ERROR");
+		return string_[i];
+	}
+	int length()
+	{
+		return string_.length;
+	}
+	myString substring(int begin,int end)
+	{
+		char[] st=new char[0];
+		if(begin<end-1&&begin>=0&&end<=string_.length)
+		{
+			st=new char[end-begin];
+			for(int i=0;i<end-begin;i++)
+				st[i]=string_[begin+i];
+			return new myString(st);
+		}
+		else 
+		{
+			System.out.println("sunString---ERROR");
+			return new myString(st);
+		}
+	}
+	myString toLowerCase()
+	{
+		char[] st=new char[string_.length];
+		for(int i=0;i<string_.length;i++)
+			if(Character.isUpperCase(string_[i]))
+				st[i]=(char)(string_[i]+32);
+			else
+				st[i]=string_[i];
+		return new myString(st);
+	}
+	boolean equals(myString S)
+	{
+		if(S.string_.length!=string_.length)
+			return false;
+		int i=0;
+		for( ;i<S.string_.length;i++)
+			if(S.string_[i]!=string_[i])
+				break;
+		if(i!=S.string_.length)
+			return false;
+		else
+			return true;
+	}
+	void out()
+	{
+		System.out.println(string_);
+	}
+	static myString valueOf(int x)
+	{
+		int num=(int)Math.log10(x)+1;
+		//System.out.println(num);
+		char[] st=new char[num];
+		for(int i=num-1;i>=0;i--)
+		{
+			st[i]=(char)(x%10+48);
+			x/=10;
+		}
+		//System.out.println(st);
+		return new myString(st);
+	}
+}
+
+

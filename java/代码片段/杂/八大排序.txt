@@ -1,0 +1,308 @@
+/* //÷±Ω”≤Â»Î≈≈–Ú
+public class Test
+{
+	public static void main(String[] args)
+	{
+		int[] a={95,65,23,15,35,62,98,48,65,12};
+		insertSort(a);
+		System.out.println(java.util.Arrays.toString(a));
+	}
+	public static void insertSort(int[] a)
+	{
+		for(int i=0;i<a.length-1;i++)
+		{
+			int temp=a[i+1];
+			int j=i;
+			for( ;j>-1&&a[j]>temp;j--)
+				a[j+1]=a[j];
+			a[j+1]=temp;
+		}
+	}
+}
+
+ */
+ 
+ 
+ 
+/*  
+//œ£∂˚≈≈–Ú
+public class Test
+{
+	public static void main(String[] args)
+	{
+		int[] a={95,65,23,15,35,62,98,48,65,12};
+		int[] distance={5,2,1};
+		shellSort(a,distance);
+		System.out.println(java.util.Arrays.toString(a));
+	}
+	public static void shellSort(int a[],int dis[])
+	{
+		for(int i=0;i<dis.length;i++)
+		{
+			int span=dis[i];
+			for(int j=0;j<span;j++)
+			{
+				for(int m=j;m<a.length-span;m+=span)///////////
+				{
+					int n=m;
+					int temp=a[m+span];
+					for( ;n>-1&&a[n]>temp;n-=span)
+				        a[n+span]=a[n];
+					a[n+span]=temp;
+				}
+			}
+		}
+	}
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+/* //ºÚµ•—°‘Ò≈≈–Ú
+public class Test
+{
+	public static void main(String[] args)
+	{
+		int[] a={95,65,23,15,35,62,98,48,65,12};
+		selectSort(a);
+		System.out.println(java.util.Arrays.toString(a));
+	}
+	public static void selectSort(int[] a)
+	{
+		for(int i=0;i<a.length-1;i++)
+		{
+			int value=a[i];
+			int pos=i;
+			for(int j=i+1;j<a.length;j++)
+			{
+				if(value>a[j])
+				{
+					value=a[j];
+					pos=j;
+				}
+			}
+			int temp=a[pos];
+			a[pos]=a[i];
+			a[i]=temp;
+		}
+	}
+}
+
+ */
+ 
+ 
+ 
+ 
+/* //∂—≈≈–Ú
+public class Test
+{
+	public static void main(String[] args)
+	{
+		Integer[] a={95,65,23,15,35,62,12,48,65,98};
+		heapSort(a);
+		System.out.println(java.util.Arrays.toString(a));
+	}
+	public static <T extends Comparable<T>> void heapSort(T[] a)
+	{
+		Heap<T> heap=new Heap<T>(a);
+		for(int i=a.length-1;i>-1;i--)
+			a[i]=heap.remove();
+	}
+}
+class Heap<T extends Comparable<T>>
+{
+	private java.util.ArrayList<T> list;
+	public Heap()
+	{
+		list=new java.util.ArrayList<T>();
+	}
+	public Heap(T[] elements)
+	{
+		list=new java.util.ArrayList<T>();
+		for(int i=0;i<elements.length;i++)
+			this.add(elements[i]);                   /// «this.add  ∂¯∑«list.add
+	}
+	public void add(T t)
+	{
+		list.add(t);
+		int currentIndex=list.size()-1;
+		while(currentIndex>0)
+		{
+			int parentIndex=(currentIndex-1)/2;
+			if( list.get(currentIndex).compareTo(list.get(parentIndex))>0 ) 
+			{
+			    T temp=list.get(currentIndex);
+				list.set(currentIndex,list.get(parentIndex));
+				list.set(parentIndex,temp);
+			}
+			else 
+				break;
+			currentIndex=parentIndex;
+		} 
+	}
+	public T remove()
+	{
+		if(list.size()==0)
+			return null;
+		T result=list.get(0);
+		list.set(0,list.get(list.size()-1));
+		list.remove(list.size()-1);
+		int currentIndex=0;
+		while(currentIndex<list.size())
+		{
+			int leftIndex=currentIndex*2+1;
+			int rightIndex=currentIndex*2+2;
+			if(leftIndex>=list.size())
+				break;
+			int maxIndex=leftIndex;
+			if(rightIndex<list.size())
+				if(list.get(maxIndex).compareTo(list.get(rightIndex))<0)
+                    maxIndex=rightIndex;
+			if(list.get(maxIndex).compareTo(list.get(currentIndex))>0)
+			{
+				T temp=list.get(currentIndex);
+				list.set(currentIndex,list.get(maxIndex));
+				list.set(maxIndex,temp);
+				currentIndex=maxIndex;
+			}
+			else 
+				break;
+		}
+		return result;
+	} 
+
+}
+ */
+ 
+ 
+ /* //√∞≈›≈≈–Ú
+ public class Test
+ {
+	public static void main(String[] args)
+	{
+		int[] a={95,65,23,15,35,62,98,48,65,12};
+		bubbleSort(a);
+		System.out.println(java.util.Arrays.toString(a));
+	}	
+	public static void bubbleSort(int[] a)
+	{
+		boolean flag=true;
+		for(int i=0;i<a.length-1&&flag;i++)
+		{
+			flag=false;
+			for(int j=0;j<a.length-i-1;j++)
+			{
+				if(a[j]>a[j+1])
+				{
+					int temp = a[j];
+					a[j] = a[j+1];
+					a[j+1] = temp;
+					flag=true;
+				}
+			}
+		}
+	}
+ }
+ 
+ 
+  */
+
+  
+  
+/* //øÏÀŸ≈≈–Ú
+public class Test
+{
+	public static void main(String[] args)
+	{
+		int[] a={95,65,23,15,35,62,98,48,65,12};
+		quickSort(a,0,a.length-1);
+		System.out.println(java.util.Arrays.toString(a));
+	}
+	public static void quickSort(int[] a,int low,int height)
+	{
+		int i = low;
+		int j = height;
+		int temp = a[i];
+		while(i<j)
+		{
+			while(i<j&&temp<=a[j])
+				j--;
+			if(i<j)
+			{
+				a[i]=a[j];
+				i++;
+			}
+			while(i<j&&temp>a[i])
+				i++;
+			if(i<j)
+			{
+				a[j]=a[i];
+				j--;
+			}
+		}
+		a[i]=temp;
+		if(i>low)
+			quickSort(a,i+1,height);
+		if(i<height)
+			quickSort(a,low,i-1);
+	}
+} */
+  
+  
+  
+  
+/* //πÈ≤¢≈≈–Ú
+public class Test
+{
+	public static void main(String[] args)
+	{
+		int[] a={95,65,23,15,35,62,98,48,65,12};
+		mergeSort(a);
+		System.out.println(java.util.Arrays.toString(a));
+	}
+	public static void mergeSort(int[] a)
+	{
+		if(a.length>1)
+		{
+		    int[] left = new int[a.length/2];
+			System.arraycopy(a,0,left,0,left.length);
+			mergeSort(left);
+			
+			int[] right=new int[a.length-left.length];
+			System.arraycopy(a,left.length,right,0,right.length);
+			mergeSort(right);
+			
+			int[] temp=new int[left.length+right.length];
+			temp=merge(left,right);
+			System.arraycopy(temp,0,a,0,temp.length);
+		}
+			
+	}
+	public static int[] merge(int[] a,int[] b)
+	{
+		int current1=0;
+		int current2=0;
+		int current3=0;
+		int[] temp=new int[a.length+b.length];
+		while(current1<a.length&&current2<b.length)
+		{
+			if(a[current1]<b[current2])
+	        temp[current3++] = a[current1++];
+			else
+				temp[current3++] = b[current2++];
+		}
+		while(current1<a.length)
+			temp[current3++] = a[current1++];
+		while(current2<b.length)
+			temp[current3++] = b[current2++];   //////////
+		return temp;
+	}
+} *//////÷±Ω”≤Â»Î≈≈–Ú	

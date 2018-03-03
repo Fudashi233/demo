@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqls>
+    
+    <module name="user" namespace="user">
+        <sql name="selectAllUser" value="SELECT * FROM t_user" />
+        <sql name="selectUserById">
+            SELECT * FROM t_user WHERE userId = ?
+        </sql>
+    </module>
+    
+    <module name="default">
+        <sql name="selectAllCard" value="SELECT * FROM t_card" />
+        <sql name="selectCardById">
+            SELECT * FROM t_card WHERE id = ?
+        </sql>
+    </module>
+    
+</sqls>

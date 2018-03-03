@@ -1,0 +1,140 @@
+package cn.edu.jxau;
+
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+
+import javax.swing.JApplet;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.JFrame;
+
+import javax.swing.table.DefaultTableModel;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+public class JDBCTest extends JApplet
+{
+	private JTextField databaseName;
+	private JTextField tableName;
+	private JTable table;
+	Object[] columnNames={"sNo","sName","sSex","sAge","sDept"};
+	Object[][] data;
+	public JDBCTest()
+	{
+		databaseName=new JTextField("test",10);
+		tableName=new JTextField("student",10);
+		table=new JTable();
+		setUI();
+		tableName.addActionListener(
+				                       new ActionListener()
+				                       {
+				                    	   public void actionPerformed(ActionEvent e)
+				                    	   {
+				                    		   String dName=databaseName.getText();
+				                    		   String tName=tableName.getText();
+				                    		   if(dName!=null&&tName!=null)
+				                    		   {
+				                    			   try
+				                    			   {
+				                    				   data=getTable(dName,tName);
+				                    			       DefaultTableModel model=new DefaultTableModel(data,columnNames);
+				                    			       table.setModel(model);
+				                    			       System.out.println("55---");
+				                    			   }
+				                    			   catch(ClassNotFoundException ex)
+				                    			   {
+				                    				   System.out.println(ex);
+				                    			   }
+				                    			   catch(SQLException ex)
+				                    			   {
+				                    				   System.out.println(ex);
+				                    			   }
+				                    		   }
+				                    		   else
+				                    		   {
+				                    			   JOptionPane.showMessageDialog(null, "Please input complete database information!");
+				                    		   }
+				                    	   }
+				                       }
+				                   );
+	}
+	public void setUI()
+	{
+		JPanel p1=new JPanel();
+		p1.add(new JLabel("Database name"));
+		p1.add(databaseName);
+		p1.add(new JLabel("Table name"));
+		p1.add(tableName);
+		this.add(p1,BorderLayout.NORTH);
+		this.add(new JScrollPane(table),BorderLayout.CENTER);
+	}
+	public static void printTable(Object[][] table)
+	{
+		for(Object[] row:table)
+		{
+			for(Object element:row)
+			{
+				System.out.printf("%10s",element);
+			}
+			System.out.println();
+		}
+	}
+	public static Object[][] getTable(String databaseName,String tableName) throws ClassNotFoundException,SQLException
+	{
+		String url="jdbc:mysql://localhost/"+databaseName;
+		String user="root";
+		String password="4869";
+		String sql="SELECT * FROM "+tableName;
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection connection=DriverManager.getConnection(url,user,password);
+		Statement statement=connection.createStatement();
+		ResultSet resultSet=statement.executeQuery(sql);
+		ResultSetMetaData metaData=resultSet.getMetaData();
+		int row=getRows(resultSet);
+		int column=metaData.getColumnCount();
+		Object[][] table=new Object[row][column];
+		int i=0;
+		while(resultSet.next())
+		{
+			
+			for(int j=1;j<=column;j++)
+			{
+			    table[i][j-1]=resultSet.getObject(j);//columnIndex
+			}
+			i++;
+		}
+		try{}
+		finally
+		{
+			resultSet.close();
+			try{}
+			finally
+			{
+				statement.close();
+				try{}
+				finally
+				{
+					connection.close();
+				}
+			}
+		}
+		return table;
+	}
+	public static int getRows(ResultSet set) throws SQLException
+	{
+		int rows=0;
+		while(set.next())
+			rows++;
+		set.beforeFirst();
+		return rows;
+	}
+}

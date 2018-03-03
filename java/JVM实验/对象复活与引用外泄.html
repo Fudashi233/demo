@@ -1,0 +1,69 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title></title>
+<style>#BAIDU_DSPUI_FLOWBAR,.adsbygoogle,.ad,div[class^="ad-widsget"],div[id^="div-gpt-ad-"],a[href*="@"][href*=".exe"],a[href*="/?/"][href*=".exe"],.adpushwin{display:none !important;}</style><style id="system" type="text/css">h1,h2,h3,h4,h5,h6,p,blockquote {    margin: 0;    padding: 0;}body {    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;    font-size: 13px;    line-height: 18px;    color: #737373;    margin: 10px 13px 10px 13px;}a {    color: #0069d6;}a:hover {    color: #0050a3;    text-decoration: none;}a img {    border: none;}p {    margin-bottom: 9px;}h1,h2,h3,h4,h5,h6 {    color: #404040;    line-height: 36px;}h1 {    margin-bottom: 18px;    font-size: 30px;}h2 {    font-size: 24px;}h3 {    font-size: 18px;}h4 {    font-size: 16px;}h5 {    font-size: 14px;}h6 {    font-size: 13px;}hr {    margin: 0 0 19px;    border: 0;    border-bottom: 1px solid #ccc;}blockquote {    padding: 13px 13px 21px 15px;    margin-bottom: 18px;    font-family:georgia,serif;    font-style: italic;}blockquote:before {    content:"C";    font-size:40px;    margin-left:-10px;    font-family:georgia,serif;    color:#eee;}blockquote p {    font-size: 14px;    font-weight: 300;    line-height: 18px;    margin-bottom: 0;    font-style: italic;}code, pre {    font-family: Monaco, Andale Mono, Courier New, monospace;}code {    background-color: #fee9cc;    color: rgba(0, 0, 0, 0.75);    padding: 1px 3px;    font-size: 12px;    -webkit-border-radius: 3px;    -moz-border-radius: 3px;    border-radius: 3px;}pre {    display: block;    padding: 14px;    margin: 0 0 18px;    line-height: 16px;    font-size: 11px;    border: 1px solid #d9d9d9;    white-space: pre-wrap;    word-wrap: break-word;}pre code {    background-color: #fff;    color:#737373;    font-size: 11px;    padding: 0;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style></head>
+<body><h1>对象复活与引用外泄</h1>
+<h2>源码</h2>
+<pre><code class="lang-java">package test;
+
+import java.nio.ByteBuffer;
+import java.util.Vector;
+
+public class Test {
+
+    private static Test obj;
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("invoke finalize()");
+        super.finalize();
+        obj = this;
+    }
+    public static void main(String[] args) throws InterruptedException {
+
+        obj = new Test();
+        System.out.println(obj);
+        obj = null;
+        System.gc();
+        Thread.sleep(1000);
+        if(obj==null) {
+            System.out.println("the obj is null");
+        } else {
+            System.out.println(obj);
+        }
+        obj = null;
+        System.gc();
+        Thread.sleep(1000);
+        if(obj==null) {
+            System.out.println("the obj is null");
+        } else {
+            System.out.println(obj);
+        }
+    }
+}</code></pre>
+<h2>VM arguments</h2>
+<p>-XX:+PrintCommandLineFlags
+
+</p>
+<h2>console</h2>
+<p>-XX:InitialHeapSize=199409856 -XX:MaxHeapSize=3190557696 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC 
+</p>
+<hr>
+<p>test.Test@659e0bfd<br>invoke finalize()<br>test.Test@659e0bfd<br>the obj is null  
+
+</p>
+<p>在<code>finalize()</code>方法的调用过程中，由于<code>obj = this;</code>
+这条语句的存在，导致obj对象任然可达（可触及），这就是所谓的对象复活。
+java对象被真正清除前会调用其<code>finalize()</code>方法，如果对象在方法调用过程中复活了
+则对象无法被GC，如果没有复活，那么就会转为不可达状态，从而被GC清除。
+<code>finalze()</code>方法仅会被调用一次
+
+</p>
+<h2>为什么finalize()方法是一个糟糕的方法</h2>
+<ol>
+<li>引用外泄造成对象复活</li>
+<li>调用时间不明确，在不发生GC的极端情况下，<code>finalize()</code>甚至不会被调用</li>
+<li>一个糟糕的<code>finalize()</code>会影响GC情况
+Edit By <a href="http://mahua.jser.me">MaHua</a></li>
+</ol>
+</body></html>

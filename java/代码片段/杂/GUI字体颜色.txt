@@ -1,0 +1,59 @@
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Font;
+public class a
+{
+	public static void main(String[] args)
+	{
+		MyFrame frame=new MyFrame();
+		frame.setSize(400,350);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+}
+
+class MyFrame extends JFrame
+{
+	public MyFrame()
+	{
+		super("Hello");
+		LineBorder line=new LineBorder(Color.YELLOW,2);
+		Font font=new Font("TimesRoman",Font.BOLD,10);
+		JLabel l1=new JLabel("RED");
+		JLabel l2=new JLabel("BLACK");
+		JLabel l3=new JLabel("WHITE");
+		JLabel l4=new JLabel("RED");
+		JLabel l5=new JLabel("ORANGE");
+		JLabel l6=new JLabel("BLACK");
+		l1.setForeground(Color.RED);
+		l1.setBorder(line);
+		l1.setFont(font);
+		
+		l2.setForeground(Color.BLACK);
+		l2.setBorder(line);
+		l2.setFont(font);
+		
+		l3.setForeground(Color.WHITE);
+		l3.setBorder(line);
+		
+		l4.setForeground(Color.RED);
+		l4.setBorder(line);
+		
+		l5.setForeground(Color.ORANGE);
+		l5.setBorder(line);
+		
+		l6.setForeground(Color.BLACK);
+		l6.setBorder(line);
+		
+		setLayout(new GridLayout(2,3,5,5));
+		add(l1);
+		add(l2);
+		add(l3);
+		add(l4);
+		add(l5);
+		add(l6);
+	}
+}

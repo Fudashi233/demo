@@ -1,0 +1,553 @@
+//自行构造一个Entry（已value为基准比较），而后存到TreeSet中，也只能用TreeSet方法
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class Main {
+    public static void main(String[] args) {
+        Set set = new TreeSet(); 
+        set.add(new Pair("me", "1000"));
+        set.add(new Pair("and", "4000"));
+        set.add(new Pair("you", "3000"));
+        set.add(new Pair("food", "10000"));    //////奶奶的  这里居然是add
+        set.add(new Pair("hungry", "5000"));
+        set.add(new Pair("later", "6000"));
+        set.add(new Pair("myself", "1000"));
+        for (Iterator i = set.iterator(); i.hasNext();)
+            System.out.println(i.next());
+
+    }
+}
+
+class Pair implements Comparable {
+    private final String name;
+    private final int number;
+    public Pair(String name, int number) {
+        this.name = name;
+        this.number = number;
+    }
+    public Pair(String name, String number) throws NumberFormatException {
+        this.name = name;
+        this.number = Integer.parseInt(number);
+	}
+    public int compareTo(Object o) {
+        if (o instanceof Pair) {
+            int cmp = Double.compare(number, ((Pair) o).number);
+            if (cmp != 0) {
+                return cmp;
+            }
+            return name.compareTo(((Pair) o).name);
+        }
+        throw new ClassCastException("Cannot compare Pair with "
+               + o.getClass().getName());
+	   }
+    public String toString() {
+        return name + ' ' + number;
+
+    }
+
+}
+
+
+
+
+
+import java.io.BufferedReader;
+ import java.io.FileNotFoundException;
+ import java.io.FileReader;
+ import java.io.IOException;
+ import java.util.*;
+  
+/**
+  * Created by IntelliJ IDEA.
+  * User: FLY
+  * Date: 11-9-13
+  * Time: 下午3:59
+  * To change this template use File | Settings | File Templates.
+  */
+ public class FileWordCount {
+     public static void main(String[] args) {
+         try {
+             BufferedReader br = new BufferedReader(new FileReader("D:\\test.txt"));
+             String s;
+             StringBuffer sb = new StringBuffer();
+             while ((s = br.readLine()) != null) {
+                 sb.append(s);
+             }
+             Map<String,Integer> map = new HashMap<String, Integer>();
+             StringTokenizer st = new StringTokenizer(sb.toString(),",.! \n");
+             while (st.hasMoreTokens()) {
+                 String letter = st.nextToken();
+                 int count;
+                 if (map.get(letter) == null) {
+                     count = 1;
+                 } else {
+                     count = map.get(letter).intValue() + 1;
+                 }
+                 map.put(letter,count);
+             }
+             Set<WordEntity> set = new TreeSet<WordEntity>();
+             for (String key : map.keySet()) {
+                 set.add(new WordEntity(key,map.get(key)));
+             }
+             // 自己拼接字符串，输出我们想要的字符串格式
+             System.out.println("输出形式一：");
+             for (Iterator<WordEntity> it = set.iterator(); it.hasNext(); ) {
+                 WordEntity w = it.next();
+                 System.out.println("单词:" + w.getKey() + " 出现的次数为： " + w.getCount());
+             }
+             // 直接打印 WordEntity 对象，实现我们想要的输出效果，只需在WordEntity类中重写toString()方法
+             System.out.println("输出形式二：");
+             for (Iterator<WordEntity> it = set.iterator(); it.hasNext(); ) {
+                 WordEntity w = it.next();
+                 System.out.println(w);
+             }
+             // 我们可以控制只输出前三名来
+             System.out.println("输出形式三：");
+             int count = 1;
+             for (Iterator<WordEntity> it = set.iterator(); it.hasNext(); ) {
+                 WordEntity w = it.next();
+                 System.out.println("第" + count + "名为单词:" + w.getKey() + " 出现的次数为： "
+                         + w.getCount());
+                 if (count == 3)// 当输出3个后跳出循环
+                     break;
+                 count++;
+             }
+         } catch (FileNotFoundException e) {
+             System.out.println("文件未找到~！");
+         } catch (IOException e) {
+             System.out.println("文件读异常~！");
+         }
+     }
+ }
+  
+  
+  
+WordEntity.java文件
+  
+/**
+  * Created by IntelliJ IDEA.
+  * User: FLY
+  * Date: 11-9-13
+  * Time: 下午4:57
+  * To change this template use File | Settings | File Templates.
+  */
+ public class WordEntity implements Comparable<WordEntity> {
+     private String key;
+     private Integer count;
+     public WordEntity (String key, Integer count) {
+         this.key = key;
+         this.count = count;
+     }
+     public int compareTo(WordEntity o) {
+         int cmp = count.intValue() - o.count.intValue();
+         return (cmp == 0 ? key.compareTo(o.key) : -cmp);
+         //只需在这儿加一个负号就可以决定是升序还是降序排列  -cmp降序排列，cmp升序排列
+         //因为TreeSet会调用WorkForMap的compareTo方法来决定自己的排序
+     }
+  
+    @Override
+     public String toString() {
+         return key + " 出现的次数为：" + count;
+     }
+  
+    public String getKey() {
+         return key;
+     }
+  
+    public Integer getCount() {
+         return count;
+     }
+ }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//事先构造比较value的比较器comparator，利用map的enrtySet（）将map中的数据传入list，
+//而后通过Collections.sort（list）来进行排序。
+import java.util.*;
+import java.util.Map.Entry;
+public class C
+{
+	public static void main(String[] args)
+	{
+		LinkedHashMap<Integer,Integer> map=new LinkedHashMap<Integer,Integer>();
+		
+		for(int i=0;i<10;i++)
+		{
+		    int key=(int)(Math.random()*5);
+			if(map.get(key)==null)
+				map.put(key,1);
+			else
+			{
+				int value=map.get(key).intValue();
+				value++;
+				map.put(key,value);
+			}
+		}
+		ArrayList<Entry<Integer,Integer>> list=new ArrayList<Entry<Integer,Integer>>(map.entrySet());
+		Collections.sort(list,new MyComparator());
+		System.out.println(list);
+		System.out.println(map);
+	}
+}
+class MyComparator implements Comparator<Entry<Integer,Integer>>,java.io.Serializable
+{
+	public int compare(Entry<Integer,Integer> o1,Entry<Integer,Integer> o2)
+	{
+		return o1.getValue().intValue()-o2.getValue().intValue();
+	}
+} 
+
+
+
+//实现一个方法进行排序
+public static Map sortByValue(Map map) {
+        List list = new LinkedList(map.entrySet());
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((Comparable) ((Map.Entry) (o1)).getValue())
+
+                        .compareTo(((Map.Entry) (o2)).getValue());
+
+
+            }
+
+        });
+
+        Map result = new LinkedHashMap();
+
+
+        for (Iterator it = list.iterator(); it.hasNext();) {
+
+            Map.Entry entry = (Map.Entry) it.next();
+
+            result.put(entry.getKey(), entry.getValue());
+
+        }
+
+        return result;
+
+    }
+
+
+
+
+    public static Map sortByValue(Map map, final boolean reverse) {
+
+        List list = new LinkedList(map.entrySet());
+
+        Collections.sort(list, new Comparator() {
+
+
+            public int compare(Object o1, Object o2) {
+
+                if (reverse) {
+
+                    return -((Comparable) ((Map.Entry) (o1)).getValue())
+
+                            .compareTo(((Map.Entry) (o2)).getValue());
+
+                }
+
+                return ((Comparable) ((Map.Entry) (o1)).getValue())
+
+                        .compareTo(((Map.Entry) (o2)).getValue());
+
+            }
+
+        });
+
+
+        Map result = new LinkedHashMap();
+
+        for (Iterator it = list.iterator(); it.hasNext();) {
+
+            Map.Entry entry = (Map.Entry) it.next();
+
+            result.put(entry.getKey(), entry.getValue());
+
+        }
+
+        return result;
+
+    }
+
+
+        Map map = new HashMap();
+
+        map.put("a", 4);
+
+        map.put("b", 1);
+
+        map.put("c", 3);
+
+        map.put("d", 2);
+
+        Map sorted = sortByValue(map);
+
+        System.out.println(sorted);
+
+// output : {b=1, d=2, c=3, a=4}
+
+
+
+
+
+
+
+
+   
+import java.util.ArrayList;  
+import java.util.Collections;  
+import java.util.Comparator;  
+import java.util.List;  
+import java.util.Map;  
+import java.util.Map.Entry;  
+import java.util.TreeMap;  
+  
+public class SortMap {  
+       public static void main(String[] args) {  
+      Map map=new TreeMap ();  
+      map.put("图书" , 4);  
+      map.put("音像" , 6);  
+      map.put("素材" , 9);  
+      map.put("音乐" , 8);  
+      map.put("影视" , 7);  
+      map.put("动漫" , 4);  
+      map.put("歌曲" , 3);  
+      map.put("图片" , 2);  
+      map.put("图标" , 6);  
+      ArrayList<Map.Entry<String,Integer>> entries= sortMap(map);  
+      for( int i=0;i<5;i++)
+	  {  
+            System. out.print(entries.get(i).getKey()+":" +entries.get(i).getValue());  
+      }  
+      }  
+    public static ArrayList<Map.Entry<String,Integer>> sortMap(Map map){  
+     List<Map.Entry<String, Integer>> entries = new ArrayList<Map.Entry<String, Integer>>(map.entrySet());  
+     Collections.sort(entries, new Comparator<Map.Entry<String, Integer>>() {  
+         public int compare(Map.Entry<String, Integer> obj1 , Map.Entry<String, Integer> obj2) {  
+             return obj2.getValue() - obj1.getValue();  
+         }  
+     });  
+      return (ArrayList<Entry<String, Integer>>) entries;  
+    }  
+}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//在TreeSet中构造函数
+
+
+
+
+import java.util.Comparator;
+import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.Map.Entry;
+public class Test 
+{
+	public static void main(String[] args)
+	{
+		HashMap<String,Integer> map=new HashMap<String,Integer>();
+		map.put("A",9);
+		map.put("B",8);
+		map.put("C",7);
+		map.put("D",6);
+		map.put("E",5);                                                     //↓↓↓↓↓↓↓↓   一定要写Comparator构造器
+		TreeSet<Entry<String,Integer>> set=new TreeSet<Entry<String,Integer>>(
+		                                                                            new Comparator<Entry<String,Integer>>()
+																					{
+																						public int compare(Entry<String,Integer> e1,Entry<String,Integer> e2)
+																						{
+																							int v1=e1.getValue().intValue();
+																							int v2=e2.getValue().intValue();
+																							if(v1==v2)
+																								return 0;
+																							else if(v1>v2)
+																								return 1;
+																							else
+																								return -1;
+																						}
+																					}
+		                                                                     );
+		set.addAll(map.entrySet());
+		System.out.println(set);
+		
+	}
+}
+
+ 
+
+
+
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//MLGB    这是唯一一次构造TreeMap比较器的方法了。。。。。。。
+import java.util.*;
+import java.util.Map.Entry;
+
+
+public class C {
+
+    public static void main(String[] args) {
+
+        HashMap<String,Double> map = new HashMap<String,Double>();
+        ValueComparator bvc =  new ValueComparator(map);
+        TreeMap<String,Double> sorted_map = new TreeMap<String,Double>(bvc);
+
+        map.put("A",99.5);
+        map.put("B",67.4);
+        map.put("C",67.4);
+        map.put("D",67.3);
+
+        System.out.println("unsorted map: "+map);
+
+        sorted_map.putAll(map);
+
+        System.out.println("results: "+sorted_map);
+    }
+}
+
+class ValueComparator implements Comparator<String> {
+
+    Map<String, Double> base;
+    public ValueComparator(Map<String, Double> base) {
+        this.base = base;
+    }
+
+    // Note: this comparator imposes orderings that are inconsistent with equals.    
+    public int compare(String a, String b) {
+        if (base.get(a) >= base.get(b)) {
+            return -1;
+        } else {
+            return 1;
+        } // returning 0 would merge keys
+    }
+}
+
+ 
+ 
+ 
+ 

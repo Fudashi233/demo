@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	一个典型的<action>标签配置
+	<package name="user" namespace="/user">
+		<action name="login" class="cn.edu.jxau.action.LoginAction" method="login">
+			<result name="success" type="dispatcher">index.jsp</result>
+			<result name="error" type="redirect">login.jsp</result>
+		</action>
+	</package>
+	浏览器发起.../user/login.action请求，LoginAction的login()方法处理这个请求，成功就forward到index.jsp，
+	失败就redirect到login.jsp页面
+ -->
+ 
+ 
+<framework>
+	
+	<package name="default">
+		<action name="index" class="cn.edu.jxau.action.UserAction" method="index">
+			<result>login.jsp</result>
+		</action>
+	</package>
+	
+	<package name="user" namespace="/user">
+		<action name="login" class="cn.edu.jxau.action.UserAction" method="login">
+			<result name="success" type="dispatcher">/index.jsp</result>
+			<result name="error" type="redirect">/login.jsp</result>
+		</action>
+		<action name="logout" class="cn.edu.jxau.action.UserAction" method="logout">
+			<result name="success" type="dispatcher">/login.jsp</result>
+			<result name="error" type="dispatcher">/index.jsp</result>
+		</action>
+	</package>
+	
+</framework>

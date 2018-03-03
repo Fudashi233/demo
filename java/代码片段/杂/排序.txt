@@ -1,0 +1,197 @@
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JLabel;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+public class MySort
+{
+	static public void insertSort(int[] array)
+	{
+		for(int i=0;i<array.length-1;i++)
+		{
+			int temp=array[i+1];
+			int j=i;
+			for( ;j>-1&&temp<array[j];j--)
+				array[j+1]=array[j];
+			array[j+1]=temp;
+		}
+	}
+	static public void quickSort(int[] array,int low,int height)
+	{
+		int i=low;
+		int j=height;
+		int temp=array[low];
+		while(i<j)               
+		{
+			while(i<j&&array[j]>temp)
+				j--;
+			if(i<j)
+			{
+				array[i]=array[j];
+				i++;
+			}
+			while(i<j&&array[i]<=temp)
+				i++;
+			if(i<j)
+			{
+				array[j]=array[i];
+				j--;
+			}
+		}
+		array[i]=temp;
+		if(i>low)
+			quickSort(array,low,i-1);
+		if(i<height)
+			quickSort(array,i+1,height);
+	}
+	public static void mergeSort(int[] array)//God save me
+	{
+		if(array.length>1)     //前期居然写成了while()   God save me
+		{
+			int[] firstHalf=new int[array.length/2];
+			System.arraycopy(array,0,firstHalf,0,firstHalf.length);
+			mergeSort(firstHalf);
+			
+			int[] secondHalf=new int[array.length-firstHalf.length];
+			System.arraycopy(array,array.length/2,secondHalf,0,secondHalf.length);
+			mergeSort(secondHalf);
+			
+			int[] temp=merge(firstHalf,secondHalf);
+			System.arraycopy(temp,0,array,0,temp.length); 
+		}
+	}
+	private static int[] merge(int[] a1,int[] a2)
+	{
+		int current1=0;
+		int current2=0;
+		int current3=0;
+		int[] a=new int[a1.length+a2.length];
+		while(current1<a1.length&&current2<a2.length)
+		{
+			if(a1[current1]<a2[current2])
+				a[current3++]=a1[current1++];
+			else
+				a[current3++]=a2[current2++];
+		}
+		while(current1<a1.length)
+			a[current3++]=a1[current1++];
+		while(current2<a2.length)
+		    a[current3++]=a2[current2++];
+		return a;
+	}
+}
+class MySortPane extends JPanel
+{
+	private JTextField text;
+	private JTextArea codes;
+	private JButton quick;
+	private JButton merge;
+	private JButton insert;
+	private JButton reverse;
+	public MySortPane()
+	{
+		quick=new JButton("Quick sort");
+		merge=new JButton("Merge sort");
+		insert=new JButton("Insert sort");
+		reverse=new JButton("Reverse");
+		JPanel p1=new JPanel();
+		p1.add(quick);
+		p1.add(merge);
+		p1.add(insert);
+		p1.add(reverse);
+		
+		text=new JTextField("2,1,6,5,9",30);
+		JPanel p2=new JPanel();
+		p2.add(new JLabel("数组（请用逗号隔开）"));            //自定义异常类
+        p2.add(text);
+		
+		JPanel p3=new JPanel(new BorderLayout(0,0));
+		p3.add(p2,BorderLayout.CENTER);
+		p3.add(p1,BorderLayout.SOUTH);
+		
+		codes=new JTextArea(readCodes());
+		this.setLayout(new BorderLayout(0,0));
+		this.add(new JScrollPane(codes),BorderLayout.CENTER);
+		this.add(p3,BorderLayout.SOUTH);
+		//////////fit listener;
+		quick.addActionListener(new MySortPaneListener());
+		merge.addActionListener(new MySortPaneListener());
+		insert.addActionListener(new MySortPaneListener());
+		reverse.addActionListener(new MySortPaneListener());
+	}
+	public String arrayToString(int[] array)
+	{
+		String st="";
+		for(int i=0;i<array.length;i++)
+			st=st+array[i]+",";
+		return st;
+	}
+	public int[] getArray(String text)
+	{
+		String[] integer=text.split(",");
+		int[] array=new int[integer.length];
+		
+		for(int i=0;i<integer.length;i++)
+			array[i]=Integer.parseInt(integer[i]);
+		return array;
+	}
+	public String readCodes()
+	{
+		String st="";
+		int ch;
+		File file=new File("MySort.java");
+		try
+		{
+			FileInputStream input=new FileInputStream(file);
+			while((ch=input.read())!=-1)
+				st+=(char)ch;
+		}
+		catch(IOException ex)
+		{
+			System.out.println(ex);
+		}
+		return st;
+	}
+	class MySortPaneListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			if(e.getSource()==quick)
+			{
+				int[] a=getArray(text.getText());
+				MySort.quickSort(a,0,a.length-1);
+				text.setText(arrayToString(a));
+			}
+			else if(e.getSource()==insert)
+			{
+				int[] a=getArray(text.getText());
+				MySort.insertSort(a);
+				text.setText(arrayToString(a));
+			}
+			else if(e.getSource()==merge)
+			{
+				int[] a=getArray(text.getText());		
+				MySort.mergeSort(a);
+				text.setText(arrayToString(a));
+			}
+			else if(e.getSource()==reverse)
+			{
+				int[] a=getArray(text.getText());
+				int[] temp=new int[a.length];
+				for(int i=a.length-1,j=0;i>-1;i--)
+					temp[j++]=a[i];
+				text.setText(arrayToString(temp));
+			}
+				
+		}
+	}
+}

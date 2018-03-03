@@ -1,0 +1,145 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title></title>
+<style>#BAIDU_DSPUI_FLOWBAR,.adsbygoogle,.ad,div[class^="ad-widsget"],div[id^="div-gpt-ad-"],a[href*="@"][href*=".exe"],a[href*="/?/"][href*=".exe"],.adpushwin{display:none !important;}</style><style id="system" type="text/css">h1,h2,h3,h4,h5,h6,p,blockquote {    margin: 0;    padding: 0;}body {    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;    font-size: 13px;    line-height: 18px;    color: #737373;    margin: 10px 13px 10px 13px;}a {    color: #0069d6;}a:hover {    color: #0050a3;    text-decoration: none;}a img {    border: none;}p {    margin-bottom: 9px;}h1,h2,h3,h4,h5,h6 {    color: #404040;    line-height: 36px;}h1 {    margin-bottom: 18px;    font-size: 30px;}h2 {    font-size: 24px;}h3 {    font-size: 18px;}h4 {    font-size: 16px;}h5 {    font-size: 14px;}h6 {    font-size: 13px;}hr {    margin: 0 0 19px;    border: 0;    border-bottom: 1px solid #ccc;}blockquote {    padding: 13px 13px 21px 15px;    margin-bottom: 18px;    font-family:georgia,serif;    font-style: italic;}blockquote:before {    content:"C";    font-size:40px;    margin-left:-10px;    font-family:georgia,serif;    color:#eee;}blockquote p {    font-size: 14px;    font-weight: 300;    line-height: 18px;    margin-bottom: 0;    font-style: italic;}code, pre {    font-family: Monaco, Andale Mono, Courier New, monospace;}code {    background-color: #fee9cc;    color: rgba(0, 0, 0, 0.75);    padding: 1px 3px;    font-size: 12px;    -webkit-border-radius: 3px;    -moz-border-radius: 3px;    border-radius: 3px;}pre {    display: block;    padding: 14px;    margin: 0 0 18px;    line-height: 16px;    font-size: 11px;    border: 1px solid #d9d9d9;    white-space: pre-wrap;    word-wrap: break-word;}pre code {    background-color: #fff;    color:#737373;    font-size: 11px;    padding: 0;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style></head>
+<body><h1>新生代配置</h1>
+<h2>源码</h2>
+<pre><code class="lang-java">public class Test {
+
+    public static void main(String[] args) {
+
+        byte[] b = null;
+        for (int i = 0; i &lt; 10; i++) {
+            b = new byte[1 * 1024 * 1024]; // 1M
+        }
+    }
+}</code></pre>
+<h2>VM arguments</h2>
+<p>-Xmx20m
+-Xms20m
+-Xmn1m
+-XX:SurvivorRatio=2
+-XX:+PrintGCDetails
+-XX:+PrintCommandLineFlags
+
+</p>
+<h2>console</h2>
+<p>-XX:InitialHeapSize=20971520 -XX:MaxHeapSize=20971520 -XX:MaxNewSize=1048576 -XX:NewSize=1048576 -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:SurvivorRatio=2 -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC 
+</p>
+<hr>
+<p>[GC (Allocation Failure) [PSYoungGen: 512K-&gt;488K(1024K)] 512K-&gt;488K(19968K), 0.0008640 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+</p>
+<hr>
+<p>Heap
+ PSYoungGen      total 1024K, used 681K [0x00000000ffe80000, 0x0000000100000000, 0x0000000100000000)
+  eden space 512K, 37% used [0x00000000ffe80000,0x00000000ffeb06d8,0x00000000fff00000)
+  from space 512K, 95% used [0x00000000fff00000,0x00000000fff7a020,0x00000000fff80000)
+  to   space 512K, 0% used [0x00000000fff80000,0x00000000fff80000,0x0000000100000000)
+ ParOldGen       total 18944K, used 10240K [0x00000000fec00000, 0x00000000ffe80000, 0x00000000ffe80000)
+  object space 18944K, 54% used [0x00000000fec00000,0x00000000ff6000a0,0x00000000ffe80000)
+ Metaspace       used 2553K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 273K, capacity 386K, committed 512K, reserved 1048576K
+<code>Java HotSpot(TM) 64-Bit Server VM warning: NewSize (1536k) is greater than the MaxNewSize (1024k). A new max generation size of 1536k will be used.</code>
+
+</p>
+<p>根据PSYounGen的下界、当前上界和上界可以算出其大小是1536K而非显示的1024K(所以这玩意不是很准确)，正好符合了VM warning给出的信息。
+同样的道理，计算出eden=512K（used 193K），from=512K（488K），to=512K（0K），发现<code>-XX:SurvivorRatio=2</code>失效了，个人猜测是由于
+这个警告导致其失效，将<code>-Xmn1m</code>改为<code>-Xmn2m</code>，警告消失，经过计算后验证，<code>-XX:SurvivorRatio=2</code>生效了。
+
+
+</p>
+<h2>VM arguments</h2>
+<p>-Xmx20m
+-Xms20m
+-Xmn7m
+-XX:SurvivorRatio=2
+-XX:+PrintGCDetails
+-XX:+PrintCommandLineFlags
+
+</p>
+<h2>console</h2>
+<p>-XX:InitialHeapSize=20971520 -XX:MaxHeapSize=20971520 -XX:MaxNewSize=7340032 -XX:NewSize=7340032 -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:SurvivorRatio=2 -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC 
+[GC (Allocation Failure) [PSYoungGen: 3840K-&gt;1528K(5632K)] 3840K-&gt;1576K(18944K), 0.0015150 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+[GC (Allocation Failure) [PSYoungGen: 4680K-&gt;1528K(5632K)] 4728K-&gt;1600K(18944K), 0.0013225 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+[GC (Allocation Failure) [PSYoungGen: 4671K-&gt;1528K(5632K)] 4743K-&gt;1600K(18944K), 0.0005693 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+Heap
+ PSYoungGen      total 5632K, used 2634K [0x00000000ff900000, 0x0000000100000000, 0x0000000100000000)
+  eden space 4096K, 27% used [0x00000000ff900000,0x00000000ffa14930,0x00000000ffd00000)
+  from space 1536K, 99% used [0x00000000ffd00000,0x00000000ffe7e020,0x00000000ffe80000)
+  to   space 1536K, 0% used [0x00000000ffe80000,0x00000000ffe80000,0x0000000100000000)
+ ParOldGen       total 13312K, used 72K [0x00000000fec00000, 0x00000000ff900000, 0x00000000ff900000)
+  object space 13312K, 0% used [0x00000000fec00000,0x00000000fec12000,0x00000000ff900000)
+ Metaspace       used 2553K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 273K, capacity 386K, committed 512K, reserved 1048576K
+
+</p>
+<p>eden/from=eden/to对于<code>-XX:SurvivorRatio</code>指定规定参数。7M的新生代并不满足应用程序所申请的
+10M空间，所以发生了GC，由于晋升，大量对象进入了from/to区
+
+
+</p>
+<h2>VM arguments</h2>
+<p>-Xmx20m
+-Xms20m
+-Xmn15m
+-XX:+PrintGCDetails
+-XX:+PrintCommandLineFlags
+
+</p>
+<h2>console</h2>
+<p>-XX:InitialHeapSize=20971520 -XX:MaxHeapSize=20971520 -XX:MaxNewSize=15728640 -XX:NewSize=15728640 -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC 
+</p>
+<hr>
+<p>Heap
+ PSYoungGen      total 13824K, used 11526K [0x00000000ff100000, 0x0000000100000000, 0x0000000100000000)
+  eden space 12288K, 93% used [0x00000000ff100000,0x00000000ffc419b0,0x00000000ffd00000)
+  from space 1536K, 0% used [0x00000000ffe80000,0x00000000ffe80000,0x0000000100000000)
+  to   space 1536K, 0% used [0x00000000ffd00000,0x00000000ffd00000,0x00000000ffe80000)
+ ParOldGen       total 5120K, used 0K [0x00000000fec00000, 0x00000000ff100000, 0x00000000ff100000)
+  object space 5120K, 0% used [0x00000000fec00000,0x00000000fec00000,0x00000000ff100000)
+ Metaspace       used 2551K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 273K, capacity 386K, committed 512K, reserved 1048576K
+
+</p>
+<p>新生代足够大（15M），所以不会触发GC，所有的内存分配均在eden区
+
+
+</p>
+<h2>VM arguments</h2>
+<p>-Xmx20m
+-Xms20m
+-XX:NewRatio=2
+-XX:+PrintGCDetails
+-XX:+PrintCommandLineFlags
+
+</p>
+<h2>console</h2>
+<p>-XX:InitialHeapSize=20971520 -XX:MaxHeapSize=20971520 -XX:NewRatio=2 -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC 
+[GC (Allocation Failure) [PSYoungGen: 4965K-&gt;504K(6144K)] 4965K-&gt;1584K(19968K), 0.0012775 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+[GC (Allocation Failure) [PSYoungGen: 5734K-&gt;488K(6144K)] 6814K-&gt;2648K(19968K), 0.0015656 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+Heap
+ PSYoungGen      total 6144K, used 1625K [0x00000000ff980000, 0x0000000100000000, 0x0000000100000000)
+  eden space 5632K, 20% used [0x00000000ff980000,0x00000000ffa9c410,0x00000000fff00000)
+  from space 512K, 95% used [0x00000000fff80000,0x00000000ffffa020,0x0000000100000000)
+  to   space 512K, 0% used [0x00000000fff00000,0x00000000fff00000,0x00000000fff80000)
+ ParOldGen       total 13824K, used 2160K [0x00000000fec00000, 0x00000000ff980000, 0x00000000ff980000)
+  object space 13824K, 15% used [0x00000000fec00000,0x00000000fee1c020,0x00000000ff980000)
+ Metaspace       used 2552K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 273K, capacity 386K, committed 512K, reserved 1048576K
+
+</p>
+<p><code>-XX:NewRatio=2</code>指定了老年代与新生代之比为2
+
+</p>
+<h2>总结</h2>
+<ul>
+<li>优化策略：尽可能将对象留在新生代，减少老年代GC的次数，因为老年代GC比较耗时</li>
+<li>-XX:ServivorRatio=eden/from=eden/to，用于配置eden和servivor的比例</li>
+<li>-XX:NewRatio=老年代/新生代，用于配置老年代与新生代的比例</li>
+</ul>
+<h2>引用</h2>
+<ul>
+<li><a href="http://blog.csdn.net/blueheart20/article/details/52092535">http://blog.csdn.net/blueheart20/article/details/52092535</a>
+Edit By <a href="http://mahua.jser.me">MaHua</a></li>
+</ul>
+</body></html>

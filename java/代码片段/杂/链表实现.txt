@@ -1,0 +1,228 @@
+public class MyLink<T>
+{
+    public Node<T> head;
+	public Node<T> tail;
+	public int size;
+	public MyLink()
+ 	{
+		head=new Node<T>();
+		tail=new Node<T>();
+		size=0;
+	}
+	public T getFirst()
+	{
+		if(this.size==0)
+			return null;
+		return head.data;
+	}
+	public T getLast()
+	{
+		if(this.size==0)
+			return null;
+		return tail.data;
+	}
+	public void addFirst(T t)
+	{
+		if(this.size==0)
+		{
+			head.data=t;
+			tail=head;
+		}
+		else
+		{
+			Node<T> current=new Node<T>(t);
+			current.next=head;
+			head=current;
+		}
+		size++;
+	}
+	public void addLast(T t)
+	{
+		if(this.size==0)
+		{
+			tail.data=t;
+			head=tail;
+		}
+		else
+		{
+			Node<T> current=new Node<T>(t);
+		    tail.next=current;
+			tail=current;
+		}
+		size++;
+	}
+	public void add(int i, T t)
+	{
+		if(i==0)
+		{
+			this.addFirst(t);
+		}
+		else if(i>=size)
+		{
+			this.addLast(t);
+		}
+		else
+		{
+			Node<T> current=new Node<T>();
+            Node<T>	temp=new Node<T>(t);		
+			current=head;
+			for(int j=1;j<i;j++)    //move i-1    
+				current=current.next;
+			temp.next=current.next;
+			current.next=temp;
+		}
+		size++;
+	}
+	public void removeFirst()
+	{
+		if(this.size==0)
+			return;
+		else if(this.size==1)
+		{
+			head=null;
+			tail=null;
+		}
+		else
+			head=head.next;
+		size--;
+	}
+	public void removeLast()
+	{
+		if(this.size==0)
+			return ;
+		else if(this.size==1)
+		{
+			head=null;
+			tail=null;
+		}
+		else 
+		{
+			Node<T> current=new Node<T>();
+			current=head;
+			for(int i=1;i<size-1;i++)
+				current=current.next;
+			tail=current;
+			tail.next=null;//////
+		}
+		size--;
+	}
+	public void remove(int i)
+	{
+		if(this.size==0)
+			return;
+		else if(i==0)
+			this.removeFirst();
+		else if(i>=size-1)
+			this.removeLast();
+		else 
+		{
+			Node<T> current=new Node<T>();
+			current=head;
+			for(int j=1;j<i;j++)
+				current=current.next;
+			current.next=current.next.next;
+		}
+		size--;
+	} 
+ 	public String toString()   ///error
+	{
+		Node<T> current=head;
+		String st="";
+		for(int i=0;i<size;i++)
+		{
+			st=st+current.data+"\t";
+			current=current.next;
+		}
+		return st;
+	}
+    public void clean()
+	{
+		head=null;
+		tail=null;
+		size=0;
+	}	
+	public boolean contains(T t)
+	{
+		Node<T> current=new Node<T>();
+		current=head;
+		for(int i=0;i<size-1;i++)
+		{
+			if(t.equals(current.data))
+				return true;
+			current=current.next;
+		}
+		return false;
+	}
+	public T get(int i)
+	{
+		if(i==0)
+			return head.data;
+		else if(i==size-1)
+			return tail.data;
+		else
+		{
+			Node<T> current=new Node<T>();
+			current=head;
+ 			for(int j=0;j<i;j++)         //move i
+				current=current.next;
+			return current.data;
+		}
+	}
+	public int indexOf(T t)
+	{
+		Node<T> current=new Node<T>(t);
+		current=head;
+		for(int i=0;i<size-1;i++)
+		{
+			//System.out.println("---");
+			if(t.equals(current.data))
+				return i;
+			current=current.next;
+		}
+	    return -1;
+	}
+	public int lastIndexOf(T t)
+	{
+		Node<T> current=new Node<T>();
+		current=head;
+	    int j=-1;
+        for(int i=0;i<size-1;i++)
+		{
+			//System.out.println("---");
+			if(t.equals(current.data))
+				j=i;
+            current=current.next;			
+		}
+        return j;		
+	}
+	public void set(int i,T t)
+	{
+		Node<T> current=new Node<T>();
+		current=head;
+		for(int j=0;j<i;j++)  //move i
+		    current=current.next;
+		current.data=t;
+	}
+	public static void main(String[] args)
+	{
+	} 
+	
+}
+
+//isEmpty()
+//getSize()
+class Node<T>
+{
+	public T data;
+	public Node<T> next;
+	public Node()
+	{
+		data=null;
+		next=null;
+	}
+	public Node(T d)
+	{
+		data=d;
+		next=null;
+	}
+}

@@ -1,0 +1,210 @@
+import javax.swing.JApplet;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
+import javax.swing.ListSelectionModel;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+import java.util.Vector;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+public class Applet extends JApplet
+{
+	private JButton save;
+    private JButton clear;
+	private JButton restore;
+	private JButton addRow;
+	private JButton addColumn;
+	private JButton deleteRow;
+	private JButton deleteColumn;
+	private JRadioButton selectionRow;
+	private JRadioButton selectionColumn;
+	private JComboBox<String> selectionModel;
+	private Object[][] data={
+		                        {"USA","Washington",420},
+									{"China","Beijing",960},
+										{"UK","LONDON",120},
+											{"GERMANY","Berlin",150},
+												{"France","Paris",140}
+	                        };
+	private String[] columnName={"Country","Captial","Area"};
+	private JTable table;
+	public Applet()
+	{
+		save=new JButton("Save");
+		clear=new JButton("Clear");
+		restore=new JButton("Restore");
+		JPanel p1=new JPanel();
+		p1.add(save);
+		p1.add(clear);
+		p1.add(restore);
+		
+		addRow=new JButton("Add new row");
+		addColumn=new JButton("Add new column");
+		deleteRow=new JButton("Delete selected row");
+		deleteColumn=new JButton("Delete selected column");
+		JPanel p2=new JPanel(new GridLayout(2,2,5,5));
+		p2.add(addRow);
+		p2.add(addColumn);
+		p2.add(deleteRow);
+		p2.add(deleteColumn);
+		
+		JPanel p3=new JPanel(new BorderLayout(0,0));   ////////BorderLayout.SOUTH
+		p3.add(p1,BorderLayout.NORTH);
+		p3.add(p2,BorderLayout.CENTER);
+		
+		JRadioButton selectionRow=new JRadioButton("Row selection allow",true);
+		JRadioButton selectionColumn=new JRadioButton("Cloumn selection allow");
+		ButtonGroup group=new ButtonGroup();
+		group.add(selectionRow);
+		group.add(selectionColumn);
+		JPanel p4=new JPanel();
+		p4.add(selectionRow);
+		p4.add(selectionColumn);
+		
+		selectionModel=new JComboBox<String>(new String[]{"SINGLE_SELECTION","SINGLE_INTERVAL_SELECTION","MULTIPLY_INTERVAL_SELECTION"});
+		JPanel p5=new JPanel(new BorderLayout(0,0));//BorderLayout.NORTH
+		p5.add(selectionModel,BorderLayout.NORTH);
+		p5.add(p4,BorderLayout.CENTER);
+		
+		DefaultTableModel model=new DefaultTableModel(data,columnName);
+		table=new JTable(model);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.add(p3,BorderLayout.SOUTH);
+		this.add(new JScrollPane(table),BorderLayout.CENTER);
+        this.add(p5,BorderLayout.NORTH);	
+		
+		//fit listener
+		selectionModel.addItemListener(
+		                                    new ItemListener()
+											{
+												public void itemStateChanged(ItemEvent e)
+												{
+													table.setSelectionMode(selectionModel.getSelectedIndex());
+												}
+											}
+		                                );
+		selectionRow.addItemListener(
+		                                    new ItemListener()
+											{
+												public void itemStateChanged(ItemEvent e)
+												{
+													table.setColumnSelectionAllowed(false);
+													table.setRowSelectionAllowed(true);
+												}
+											}
+		                            );
+		selectionColumn.addItemListener(
+		                                    new ItemListener()
+											{
+												public void itemStateChanged(ItemEvent e)
+												{
+													table.setRowSelectionAllowed(false);
+													table.setColumnSelectionAllowed(true);
+												}
+											}
+		                            );
+		clear.addActionListener(
+                                    new ActionListener()
+									{
+										public void actionPerformed(ActionEvent e)
+										{
+											model.setRowCount(0);
+										}
+									}
+                         	   );
+        addRow.addActionListener(
+		                            new ActionListener()
+									{
+										public void actionPerformed(ActionEvent e)
+										{
+											if(table.getSelectedRow()>=0)
+												model.insertRow(table.getSelectedRow(),new Vector());
+											else
+												model.addRow(new Vector());
+										}
+									}
+		                        );
+		addColumn.addActionListener(
+		                                    new ActionListener()
+											{
+												public void actionPerformed(ActionEvent e)
+												{
+													String name=JOptionPane.showInputDialog("new Column Name");
+													model.addColumn(name,new Vector());
+												}
+											}											
+		                            );
+		deleteRow.addActionListener(
+		                                new ActionListener()
+										{
+											public void actionPerformed(ActionEvent e)
+											{
+												if(table.getSelectedRow()>=0)
+													model.removeRow(table.getSelectedRow());
+											}
+											
+										}
+		                           );
+		deleteColumn.addActionListener(
+		                                    new ActionListener()
+											{
+												public void actionPerformed(ActionEvent e)
+												{
+													DefaultTableColumnModel columnModel=(DefaultTableColumnModel)table.getColumnModel();
+													TableColumn column=columnModel.getColumn(table.getSelectedColumn());
+													columnModel.removeColumn(column);
+												}
+											}
+		                              );
+/* 		save.addActionListener(
+		                            new ActionListener()
+	                                {
+										public void actionPerformed(ActionEvent e)
+										{
+										   
+											try
+											{
+			                                    ObjectOutputStream output=new ObjectOutputStream(new FileOutputStream("table.txt"));
+												output.writeObject(model.getDataVector());
+												output.writeObject(getColumnNames());
+												output.close();
+					
+											}
+											catch(Exception ex)
+											{
+												System.out.println("195---"+ex);
+											}
+										}
+									}
+		                      ); */
+	}
+/* 	public Vector getColumnNames()
+	{
+		Vector<String> v=new Vector<String>();
+		for(int i=0;i<table.getColumnCount();i++)
+			v.add(table.getColumnName(i));
+		return v;
+	} */
+	
+}

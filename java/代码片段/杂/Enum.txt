@@ -1,0 +1,543 @@
+public class Test
+{
+	public static void main(String[] args)
+	{
+		for(int i=0;i<10;i++)
+		{
+			 System.out.println(Enums.random(Size.class));
+		}
+	}
+}
+
+interface Generate<T>
+{
+	T next();
+}
+enum Size implements Generate<Size>
+{
+	BIG,
+	MEDIUM,
+	SMALL;
+	public String toString()
+	{
+		String describe = this.name();
+		char firstChar = Character.toUpperCase(describe.charAt(0));
+		String subDescribe = describe.substring(1,describe.length()).toLowerCase();
+		return firstChar+subDescribe;
+	}
+	public Size next()
+	{
+		int index = (int)(Math.random()*values().length);
+		return values()[index];
+	}
+	
+}
+class Enums
+{
+	public static <T extends Enum<T>> T random(Class<T> enumType) //自限定
+	{
+		T[] values = enumType.getEnumConstants();
+		return values[(int)(Math.random()*values.length)];
+	}
+	public static <T> T random(T[] values)
+	{
+		return values[(int)(Math.random()*values.length)];
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public class Test
+{
+	public static void main(String[] args)
+	{
+		for(int i=0;i<3;i++)
+		{
+			for(Menu m:Menu.values())
+			{
+				System.out.println(m.randomSelect());
+			}
+			System.out.println("-------------");
+		}
+	}
+}
+interface Food
+{
+	enum Fruit implements Food
+	{
+		APPLE,ORANGE,BANANA;
+	}
+	enum Vegetable implements Food
+	{
+		CABBAGE,GREENS;
+	}
+}
+enum Menu
+{
+	FRUIT(Food.Fruit.class),VEGETABLE(Food.Vegetable.class);  //一定要用Food.Fruit
+	private Food[] values;
+	Menu(Class<? extends Food> type)
+	{
+		values = type.getEnumConstants();
+	}
+	public Food randomSelect()
+	{
+		return Enums.random(this.values);
+	}
+}
+class Enums
+{
+	public static <T extends Enum<T>> T random(Class<T> enumType)
+	{
+		T[] values = enumType.getEnumConstants();
+		return values[(int)(Math.random()*values.length)];
+	}
+	public static <T> T random(T[] values)
+	{
+		return values[(int)(Math.random()*values.length)];
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public class Test
+{
+	public static void main(String[] args)
+	{
+		for(int i=0;i<3;i++)
+		{
+			for(Menu m:Menu.values())
+			{
+				System.out.println(m.randomSelect());
+			}
+			System.out.println("-------------");
+		}
+	}
+}
+enum Menu
+{
+	FRUIT(Food.Fruit.class),VEGETABLE(Food.Vegetable.class); 
+	private Food[] values;
+	Menu(Class<? extends Food> type)
+	{
+		values = type.getEnumConstants();
+	}
+	public Food randomSelect()
+	{
+		return Enums.random(this.values);
+	}
+	interface Food
+    {
+	    enum Fruit implements Food
+	    {
+		    APPLE,ORANGE,BANANA;
+	    }
+	    enum Vegetable implements Food
+	    {
+		    CABBAGE,GREENS;
+	    }
+    }
+}
+class Enums
+{
+	public static <T extends Enum<T>> T random(Class<T> enumType)
+	{
+		T[] values = enumType.getEnumConstants();
+		return values[(int)(Math.random()*values.length)];
+	}
+	public static <T> T random(T[] values)
+	{
+		return values[(int)(Math.random()*values.length)];
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Set;
+public class Test
+{
+	public static void main(String[] args)
+	{
+		EnumMap<Size,Command> map = new EnumMap<Size,Command>(Size.class);
+		map.put(
+		            Size.BIG,
+					new Command()
+		            {
+						public void action()
+						{
+							System.out.println("I am big");
+						}
+					}
+				);
+		map.put(
+		            Size.MEDIUM,
+					new Command()
+					{
+						public void action()
+						{
+							System.out.println("I am medium");
+						}
+					}
+		       );
+		for(Map.Entry<Size,Command> e:map.entrySet())
+		{
+			System.out.println(e.getKey());
+			e.getValue().action();
+		}
+	}
+}
+interface Command
+{
+	public void action();
+}
+enum Size
+{
+	BIG,MEDIUM,SMALL;
+}
+class Enums
+{
+	public static <T extends Enum<T>> T random(Class<T> enumType)
+	{
+		T[] values = enumType.getEnumConstants();
+		return values[(int)(Math.random()*values.length)];
+	}
+	public static <T> T random(T[] values)
+	{
+		return values[(int)(Math.random()*values.length)];
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.EnumSet;
+public class Test
+{
+	public static void main(String[] args)
+	{
+		//record I have eaten the food;
+		Menu m = new Menu();
+		m.add(Menu.Food.APPLE);
+		System.out.println(m);
+		m.add(Menu.Food.APPLE);
+		m.add(Menu.Food.BANANA);
+		System.out.println(m);
+	}
+}
+class Menu
+{
+	public enum Food
+	{
+		APPLE
+		{
+			public void describe()
+			{
+				System.out.println("hava amounasdw apple");
+			}
+		}
+		,ORANGE
+		{
+			public void describe()
+			{
+				System.out.println("Orange");
+			}
+		},
+		BANANA
+		{
+			public void describe()
+			{
+				System.out.println("asnudiw Banana");
+			}
+		},
+		GREENS
+		{
+			public void describe()
+			{
+				System.out.println("sadu lkjw as Greens");
+			}
+		};
+		abstract public void describe();
+	}
+	private EnumSet<Food> set;
+	public Menu()
+	{
+		set = EnumSet.noneOf(Food.class);
+	}
+	public String toString()
+	{
+		return set.toString();
+	}
+	public void add(Food f)
+	{
+		set.add(f);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.Iterator;
+public class Test
+{
+    public static void main(String[] args)
+	{
+        for(Mail m:Mail.generate(5))
+			System.out.println(m+m.detail());
+	}	
+}
+interface Generate<T>
+{
+	T next();
+}
+class Enums
+{
+	public static <T> T random(T[] values)
+	{
+		int index = (int)(Math.random()*values.length);
+		return values[index];
+	}
+	public static <T extends Enum<T>> T random(Class<T> type)
+	{
+		T[] values = type.getEnumConstants();
+		return random(values);
+	}
+}
+class Mail
+{
+	public enum Delivery{NO1,NO2,NO3,NO4}
+	public enum Address{EAST,SOUTH,WEST,NORTH}
+	public enum Readable{YES,NO}
+	private Delivery delivery;
+	private Address address;
+	private Readable readable;
+	private static long count = 0;
+	private final long id = count++;
+	public Mail(Delivery d,Address a,Readable r)
+	{
+		this.delivery = d;
+		this.address = a;
+		this.readable = r;
+	}
+	public Mail()
+	{
+		
+	}
+	@Override
+	public String toString()
+	{
+		return "Mail:"+this.id;
+	}
+	public String detail()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("Delivery:");
+		builder.append(delivery);
+		builder.append("---Address:");
+		builder.append(address);
+		builder.append("---Readable:");
+		builder.append(readable);
+		return builder.toString();
+	}
+	private static Mail randomMail()
+	{
+		Mail mail = new Mail();
+		mail.delivery = Enums.random(Delivery.class);
+		mail.address = Enums.random(Address.class);
+		mail.readable = Enums.random(Readable.class);
+		return mail;
+	}
+	public static Iterable<Mail> generate(int count)
+	{
+		return new Iterable<Mail>(){
+			                            public Iterator<Mail> iterator()
+										{
+											return new Iterator<Mail>(){
+												                            int n = count;
+																		    public boolean hasNext()
+																		    {
+																			    return n!=0;
+																		    }
+																		    public void remove()
+																		    {
+																			    throw new UnsupportedOperationException();
+																		    }
+																		    public Mail next()
+																		    {
+																			    n--;
+																			    return Mail.randomMail();
+																		    }
+											                           };
+										}
+		                           };
+	}
+}

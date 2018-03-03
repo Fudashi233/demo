@@ -1,0 +1,144 @@
+import java.awt.BorderLayout;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Color;
+import java.awt.Polygon;
+public class a
+{
+	public static void main(String[] args)
+	{
+		MyFrame frame=new MyFrame();
+		frame.setSize(400,300);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+	}
+
+}
+class MyPanel extends JPanel
+{
+	public Polygon po;
+	public MyPanel()
+	{
+		po=new Polygon();
+		po.addPoint(200,150);
+	}
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(400,350);
+	}
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		g.drawPolyline(po.xpoints,po.ypoints,po.npoints);
+	}
+}
+class MyFrame extends JFrame
+{
+	private MyPanel p;
+	private JButton jbtUp;
+	private JButton jbtDown;
+	private JButton jbtLeft;
+	private JButton jbtRight;
+	MyFrame()
+	{
+		super("Windows");
+		setLayout(new BorderLayout(5,5));
+		p=new MyPanel();
+		p.setFocusable(true);
+	    ///////////////////////////////
+		jbtUp=new JButton("Up");
+		jbtDown=new JButton("Down");
+		jbtLeft=new JButton("Left");
+		jbtRight=new JButton("Right");
+		JPanel p1=new JPanel(new BorderLayout(5,5));
+		p1.add(jbtUp,BorderLayout.NORTH);
+		p1.add(jbtDown,BorderLayout.CENTER);
+		p1.add(jbtLeft,BorderLayout.WEST);
+		p1.add(jbtRight,BorderLayout.EAST);
+		///////////////////////////////
+		this.add(p,BorderLayout.CENTER);
+		this.add(p1,BorderLayout.SOUTH);
+		////////Fit listener 
+		jbtUp.addMouseListener(
+		                        new MouseAdapter()
+								{
+									public void mousePressed(MouseEvent e)
+									{
+										int x=p.po.xpoints[p.po.npoints-1];
+										int y=p.po.ypoints[p.po.npoints-1];
+										y-=10;
+										p.po.addPoint(x,y);
+										repaint();
+									}
+								}								
+		                     );
+		jbtDown.addMouseListener(
+		                            new MouseAdapter()
+									{
+										public void mousePressed(MouseEvent e)
+										{
+										    int x=p.po.xpoints[p.po.npoints-1];
+										    int y=p.po.ypoints[p.po.npoints-1];
+									    	y+=10;
+										    p.po.addPoint(x,y);
+											repaint();
+										}
+									}
+		                       );
+		jbtRight.addActionListener(
+		                            new ActionListener()
+									{
+										public void actionPerformed(ActionEvent e)
+										{
+										    int x=p.po.xpoints[p.po.npoints-1];
+										    int y=p.po.ypoints[p.po.npoints-1];
+									    	x+=10;
+										    p.po.addPoint(x,y);
+											repaint();	
+										}
+									}
+		                          );
+		jbtLeft.addActionListener(
+		                            new ActionListener()
+									{
+										public void actionPerformed(ActionEvent e)
+										{
+										    int x=p.po.xpoints[p.po.npoints-1];
+										    int y=p.po.ypoints[p.po.npoints-1];
+									    	x-=10;
+										    p.po.addPoint(x,y);
+											repaint();	
+										}
+									}
+		                          );
+		p.addKeyListener(
+		                    new KeyAdapter()
+							{
+								
+								public void keyPressed(KeyEvent e)
+								{
+									int x=p.po.xpoints[p.po.npoints-1];
+						            int y=p.po.ypoints[p.po.npoints-1];
+									switch(e.getKeyCode())
+									{
+										case KeyEvent.VK_UP:y-=10;break;
+										case KeyEvent.VK_DOWN:y+=10;break;
+										case KeyEvent.VK_LEFT:x-=10;break;
+										case KeyEvent.VK_RIGHT:x+=10;break;
+										default:System.exit(0);
+									}
+									p.po.addPoint(x,y);
+									repaint();
+								}
+							}							
+		                );
+				
+							 
+	}
+}

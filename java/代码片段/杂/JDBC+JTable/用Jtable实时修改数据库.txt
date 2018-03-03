@@ -1,0 +1,177 @@
+package cn.edu.jxau;
+
+import javax.swing.JApplet;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import java.awt.BorderLayout;
+
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+
+public class JDBCTest extends JApplet
+{
+	private JTable table;
+	private JTextField databaseName;
+	private JTextField tableName;
+	private Object[][]  data;
+	private Object[] columnNames;
+	public JDBCTest()
+	{
+		table = new JTable();
+		table.setRowSelectionAllowed(true);
+		table.setColumnSelectionAllowed(true);
+		this.setFocusable(true);
+		databaseName = new JTextField("test",10);
+		tableName = new JTextField("student",10);
+		setUI();
+		addListener();
+	}
+	public void setUI()
+	{
+		JPanel p1=new JPanel();
+		p1.add(new JLabel("Database name"));
+		p1.add(databaseName);
+		p1.add(new JLabel("Table name"));
+		p1.add(tableName);
+		
+		this.add(p1,BorderLayout.NORTH);
+		this.add(new JScrollPane(table),BorderLayout.CENTER);
+	}
+	public void addListener()
+	{
+		tableName.addActionListener(
+				                       new ActionListener()
+				                       {
+				                    	   public void actionPerformed(ActionEvent e)
+				                    	   {
+				                    		   try
+				                    		   {
+				                    			   data=getData(databaseName.getText(),tableName.getText());
+				                    			   columnNames=getColumnName(databaseName.getText(),tableName.getText());
+				                    			   MyTableModel model = new MyTableModel(data,columnNames);
+				                    			   table.setModel(model);
+				                    		   }
+				                    		   catch(SQLException ex)
+				                    		   {
+				                    			   System.out.println("56---"+ex);
+				                    		   }
+				                    	   }
+				                       }
+				                   );
+	
+//		table.addKeyListener(
+//				                new KeyAdapter()
+//				                {
+//				                	public void keyPressed(KeyEvent e)
+//				                	{
+//				                		if(e.getKeyCode()==e.VK_ENTER)
+//				                		{
+//				                			System.out.println("SAdw");
+//				                			try
+//				                			{
+//				                				modify(databaseName.getText(),tableName.getText(),table.getSelectedRow(),table.getSelectedColumn());
+//				                			}
+//				                			catch(SQLException ex)
+//				                			{
+//				                				System.out.println("126---"+ex);
+//				                			}
+//				                		}
+//				                	}
+//				                }
+//				            );
+		table.addMouseListener(
+				                    new MouseAdapter()
+				                    {
+				                    	public void mouseClicked(MouseEvent e)
+				                    	{
+				                    		if(e.getClickCount()==2)
+				                    		{
+				                    			Object newData=JOptionPane.showInputDialog(null,"Input your data");
+				                    			if(newData == null)
+				                    				return;
+				                    			table.setValueAt(newData,table.getSelectedRow(),table.getSelectedColumn());
+				                    			try
+				                    			{
+				                    				JDBCTest.this.modify(databaseName.getText(),tableName.getText(),table.getSelectedRow(),table.getSelectedColumn(),newData);
+				                    			}
+				                    			catch(SQLException ex)
+				                    			{
+				                    				System.out.println("114---"+ex);
+				                    			}
+				                    		}
+				                    	}
+				                    }
+				              );
+	}
+	public void modify(String databaseName,String tableName,int row,int column,Object newData) throws SQLException
+	{
+        String user = "root";
+        String password = "4869";
+        String sql = "UPDATE "+tableName+" SET "+columnNames[column]+"="+newData+" WHERE sNo = "+(row+1);
+        System.out.println(sql);
+        Connection connection = JDBCUtil.getConnection(databaseName, user, password);
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        JDBCUtil.free(connection,statement,null);
+	}
+	public Object[][] getData(String databaseName,String tableName) throws SQLException
+	{
+		String user = "root";
+		String password = "4869";
+		String sql = "SELECT * FROM "+tableName;
+		
+		Connection connection = JDBCUtil.getConnection(databaseName,user,password);
+		Statement statement = connection.createStatement();
+		ResultSet set = statement.executeQuery(sql);
+		ResultSetMetaData setMeta = set.getMetaData();
+		int rows = getRowCount(set);
+		int columns = setMeta.getColumnCount();
+		Object[][] data = new Object[rows][columns];
+		int i=0;
+		while(set.next())
+		{
+			for(int j=0;j<setMeta.getColumnCount();j++)
+				data[i][j]=set.getObject(j+1);
+			i++;
+		}
+		JDBCUtil.free(connection,statement,set);
+		return data;
+	}
+	public int getRowCount(ResultSet set) throws SQLException
+	{
+		int count = 0;
+		while(set.next())
+			count++;
+		set.beforeFirst();
+		return count;
+	}
+	public Object[] getColumnName(String databaseName,String tableName) throws SQLException
+	{
+		String user = "root";
+		String password = "4869";
+		String sql = "SELECT * FROM "+tableName;
+		Connection connection = JDBCUtil.getConnection(databaseName, user, password);
+		Statement statement = connection.createStatement();
+		ResultSet set = statement.executeQuery(sql);
+		ResultSetMetaData setMeta = set.getMetaData();
+		Object[] columnName = new Object[setMeta.getColumnCount()];
+		for(int i=0;i<columnName.length;i++)
+			columnName[i] = setMeta.getColumnName(i+1);
+		return columnName;
+	}
+}

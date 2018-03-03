@@ -1,0 +1,156 @@
+import java.util.*;
+
+public class Test
+{
+	public static void main(String[] args)
+	{
+		CountMap countMap = new CountMap(30);
+		System.out.println(countMap);
+	}
+}
+
+// class CountList extends AbstractList<Integer>
+// {
+	// private int size;
+	// public CountList(int size)
+	// {
+		// this.size = size<0?0:size;
+	// }
+	// public Integer get(int index) //advance for initiation
+	// {
+		// return Integer.valueOf(index);
+	// }
+	// public int size()
+	// {
+		// return this.size;
+	// }
+// }
+
+class CountMap extends AbstractMap<Integer,String>
+{
+	private int size;
+	private static String[] chars = "A B C D E F G".split(" ");
+	public CountMap(int size)
+	{
+		this.size = size<0?0:size;
+	}
+	public Set<Map.Entry<Integer,String>> entrySet()//have to override
+	{
+		Set<Map.Entry<Integer,String>> entry = new LinkedHashSet<Map.Entry<Integer,String>>();
+		for(int i=0;i<this.size;i++)
+			entry.add(new Entry(i));
+		return entry;
+	}
+	private static class Entry implements Map.Entry<Integer,String>
+	{
+		private int index;
+		public Entry(int index)
+		{
+			this.index = index;
+		}
+		public Integer getKey()//have to override
+		{
+			return this.index;
+		}
+		public String getValue()//have to override
+		{
+			return chars[index%chars.length]+index/chars.length;
+		}
+		public String setValue(String st)//have to override
+		{
+			throw new UnsupportedOperationException();
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.AbstractMap;
+import java.util.Set;
+import java.util.HashSet;
+
+public class Test
+{
+	public static void main(String[] args)
+	{
+		ArrayListMap<String,Integer> map = new ArrayListMap<String,Integer>();
+		map.put("A",1);
+		map.put("B",2);
+		map.put("C",3);
+		map.put("D",4);
+		map.put("E",5);
+		System.out.println(map);
+	}
+}
+class ArrayListMap<K,V> extends AbstractMap<K,V>
+{
+	private ArrayList<K> keys;
+	private ArrayList<V> values;
+	public ArrayListMap()
+	{
+		keys = new ArrayList<K>();
+		values = new ArrayList<V>();
+	}
+	public V put(K key,V value)
+	{
+		V oldValue = this.get(key);
+		if(!keys.contains(key))
+		{
+			keys.add(key);
+			values.add(value);
+		}
+		else
+		{
+			values.set(keys.indexOf(key),value);
+		}
+		return oldValue;
+	}
+	public V get(Object key)
+	{
+		 if(keys.contains(key))
+		 {
+			 return values.get(keys.indexOf(key));
+		 }
+		 return null;
+	}
+	public Set<Map.Entry<K,V>> entrySet()
+	{
+		Set<Map.Entry<K,V>> resultSet = new HashSet<Map.Entry<K,V>>();
+		for(int i=0;i<keys.size();i++)
+		{
+			resultSet.add(new AbstractMap.SimpleImmutableEntry<K,V>(keys.get(i),values.get(i)));
+			                              //SimpleEntry<K,V>();
+		}
+		return resultSet;
+	}
+}

@@ -1,0 +1,107 @@
+layered.add(contentPane,new Integer(1)); //一定要是new Integer，会有组件不能显示
+layered.add(backPane,new Integer(0));
+
+
+因为LayeredPane没有布局管理器，所以面板的大小无法确定
+所以需要setBounds（），不过setUI是可以直接加,而后在添加监听器的时候setBounds，
+每次创建窗口，都会触发监听器，这就设置了setBounds
+
+
+
+
+
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+public class Test1
+{
+	public static void main(String[] args) {
+		JLayeredPane_1 frame = new JLayeredPane_1();
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+}
+class JLayeredPane_1 extends JFrame 
+{
+	public JLayeredPane_1() 
+	{
+		// TODO Auto-generated constructor stub
+//		        layeredPane.setBorder(BorderFactory.createTitledBorder(null, 
+//				"layeredPane", TitledBorder.LEADING, TitledBorder.TOP, 
+//				new Font(null, Font.BOLD + Font.ITALIC, 14), Color.RED));
+		
+		
+		Point origin = new Point(0, 0);
+		Dimension dimension = new Dimension(300, 310);
+		Rectangle rectangle = new Rectangle(origin, dimension);
+		
+		
+		Image imageBg = Toolkit.getDefaultToolkit()
+		                .getImage(this.getClass().getResource("p1.jpg"));
+		ImageIcon imageIcon = new ImageIcon(imageBg.getScaledInstance
+		                      (dimension.width, dimension.height, Image.SCALE_FAST));   //设置图片大小
+		
+		
+		JLabel bg = new JLabel(imageIcon);
+		JPanel panelBg = new JPanel();
+		panelBg.setBounds(rectangle);
+		panelBg.add(bg);
+		
+		
+		JPanel panelContent = new JPanel();
+		JButton button = new JButton("button 1");
+		JButton button2 = new JButton("button 2");		
+		JButton button3 = new JButton("button 3");	
+		panelContent.setBounds(rectangle);
+		panelContent.setOpaque(false); // 设置为透明
+		panelContent.add(button);
+		panelContent.add(button2);
+		panelContent.add(button3);
+		
+		
+		JLayeredPane layeredPane = new JLayeredPane();
+		layeredPane.setPreferredSize(dimension);
+		layeredPane.add(panelBg); // the same to layeredPane.add(panelBg);
+		layeredPane.add(panelContent, new Integer(1));
+		
+		add(layeredPane, BorderLayout.CENTER);
+		
+		addComponentListener(new ComponentAdapter() 
+		{
+			    public void componentResized(ComponentEvent e) {
+				// System.out.println(layeredPane.getSize()); //此处必须用getSize()而不是用getPreferredSize()
+				// System.out.println(layeredPane.getPreferredSize());
+				Dimension dimensionNew = layeredPane.getSize();
+				Rectangle rectangleNew = new Rectangle(origin, dimensionNew);
+				panelBg.setBounds(rectangleNew);
+				panelContent.setBounds(rectangleNew);
+				bg.setIcon(new ImageIcon(imageBg.getScaledInstance
+				(dimensionNew.width, dimensionNew.height, Image.SCALE_FAST)));
+			}
+		});
+	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		JLayeredPane_1 frame = new JLayeredPane_1();
+		frame.setSize(500,500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+
+}

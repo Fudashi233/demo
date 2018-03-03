@@ -1,0 +1,181 @@
+package prototype;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+public class Prototype implements Cloneable, Serializable {  
+  
+    private static final long serialVersionUID = 1L;  
+    public Fruit fruit;  
+  
+    public Prototype()
+    {
+    	fruit = new Fruit();
+    }
+    
+    /* 浅复制 */  
+    public Object clone() throws CloneNotSupportedException {  
+        Prototype proto = (Prototype) super.clone();  
+        return proto;  
+    }  
+  
+    /* 深复制 */  
+    public Object deepClone() throws IOException, ClassNotFoundException {  
+  
+        /* 写入当前对象的二进制流 */  
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();  
+        ObjectOutputStream oos = new ObjectOutputStream(bos);  
+        oos.writeObject(this);  
+  
+        /* 读出二进制流产生的新对象 */  
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());  
+        ObjectInputStream ois = new ObjectInputStream(bis);  
+        return ois.readObject();  
+    }  
+    public static void main(String[] args) throws IOException, ClassNotFoundException
+    {
+    	Prototype p = new Prototype();
+    	Prototype pX = (Prototype)p.deepClone();
+    	System.out.println(p+"	"+p.fruit);
+    	System.out.println(pX+"	"+pX.fruit);
+    }
+
+  
+} 
+
+
+
+
+
+
+
+
+
+
+
+class Professor implements Cloneable   
+{   
+     String name;   
+     int age;   
+     Professor(String name,int age)   
+     {   
+        this.name=name;   
+        this.age=age;   
+     }   
+    public Object clone()   
+     {   
+         Object o=null;   
+        try   
+         {   
+             o=super.clone();   
+         }   
+        catch(CloneNotSupportedException e)   
+         {   
+             System.out.println(e.toString());   
+         }   
+        return o;   
+     }   
+}   
+class Student implements Cloneable   
+{   
+     String name;   
+     int age;   
+     Professor p;   
+     Student(String name,int age,Professor p)   
+     {   
+        this.name=name;   
+        this.age=age;   
+        this.p=p;   
+     }   
+    public Object clone()   
+     {   
+         Student o=null;   
+        try   
+         {   
+             o=(Student)super.clone();          //注意  这是将clone（）的返回值转换为Student
+         }   
+        catch(CloneNotSupportedException e)   
+         {   
+             System.out.println(e.toString());   
+         }   
+         o.p=(Professor)p.clone();   
+        return o;   
+     }   
+}   
+public static void main(String[] args)   
+     {   
+      // Professor p=new Professor("wangwu",50);   
+       Student s1=new Student("zhangsan",18,p);   
+       Student s2=(Student)s1.clone();   
+       s2.p.name="lisi";   
+       s2.p.age=30;   
+       System.out.println("name="+s1.p.name+","+"age="+s1.p.age);//学生1的教授不 改变。   
+}    
+
+
+
+
+
+
+
+
+public class a
+{
+	public static void main(String[] args) throws CloneNotSupportedException
+	{
+	    Rectangle a=new Rectangle(1,2,"Yellow");	
+		Rectangle b=(Rectangle)a.clone();
+		b.c_.c_="White";
+		System.out.println(a);
+		System.out.println(b);
+	}
+}
+class Color implements Cloneable
+{
+	public String c_;
+	public Color()
+	{
+		c_="White";
+	}
+	public Color(String c)
+	{
+		c_=c;
+	}
+	public Object clone() throws CloneNotSupportedException
+	{
+		return super.clone();
+	}
+}
+class Rectangle implements Cloneable
+{
+	private int width_;
+	private int height_;
+	public Color c_;
+	public Rectangle()
+	{
+		width_=1;
+		height_=1;
+		c_=new Color();
+	}
+	public Rectangle(int w,int h,String c)
+	{
+		width_=w;
+		height_=h;
+		c_=new Color(c);
+	}
+	public String toString()
+	{
+		return width_+"---"+height_+"---"+c_.c_;
+	}
+	public Object clone() throws CloneNotSupportedException
+	{
+		Rectangle clone=null;
+		clone=(Rectangle)super.clone();
+		clone.c_=(Color)c_.clone();
+		return clone;
+	}
+}

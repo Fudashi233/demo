@@ -1,0 +1,44 @@
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class Test
+{
+	public static void main(String[] args)
+	{
+		Demo d1 = new Demo("A",0);
+		Demo d2 = new Demo("A",0);
+		System.out.println(d1.hashCode());
+		System.out.println(d2.hashCode()); 	
+		System.out.println(d1.equals(d2));
+	}
+}
+class Demo
+{
+	public String st;
+	public int id;
+	public Demo(String st,int id)
+	{
+		this.st = st;
+		this.id = id;
+	}
+	@Override()
+	public int hashCode()
+	{
+		final int HASH = 37;
+		int result = 17;
+		result = HASH*result + st.hashCode();
+		result = HASH*result + id;
+		return result;
+	}
+	public boolean equals(Object o)
+	{
+		return o instanceof Demo 
+		       && ((Demo)o).id==this.id
+			   && this.st.equals(((Demo)o).st);
+	}
+}
+
+
+

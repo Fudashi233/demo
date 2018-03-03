@@ -1,0 +1,231 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+
+<!-- 对于operation元素，name就是这个操作的名字，type类型有INSERT、DELETE、UPDATE、SELECT -->
+
+<SQLConfig>
+
+<!-- 
+DELETE FROM student WHERE id>? AND id<?;
+DELETE FROM student WHERE id=?;
+DELETE FROM mysql.user WHERE User=?;
+DELETE FROM mysql.user WHERE user=?;
+ -->
+<!-- 删除的配置 -->
+<operation name = "deleteX" type = "DELETE" >
+	<tables>
+		<table tableName = "x">	<!-- 如果不配column，则表示对table的所有column进行操作 -->
+		</table>
+	</tables>
+	<conditions>
+		<condition>
+			<tableName>x</tableName><!-- 表名 --><!-- 用于生成t_user.userID,如果多个表之间没有命名冲突的话，可以省略 -->
+			<columnName>id</columnName><!-- 数据库使用的属性名 --><!-- 如果省略，则mapName默认为columnName -->
+			<mapName>idX</mapName><!--客户端使用的属性名，使用该名称，从map中取出数据，可省略-->
+			<connection>and</connection>
+			<sign>></sign><!-- 如果省略，默认为等号 -->
+		</condition>
+	</conditions>
+</operation>
+
+
+
+
+<!-- 
+UPDATE view1 SET name="付磊",kinds="SDASD",function="吃饭" ;
+UPDATE student SET name='CVB',sex='W',age=18 WHERE id=0001;
+UPDATE student SET name='ERT',sex='M',age=18 WHERE id=2;
+UPDATE mysql.user SET Password=Password("4869") WHERE User="4869" ;
+UPDATE mysql.user SET Password=Password("4869") WHERE User="root" ;
+UPDATE course SET cName="付磊" WHERE cName="OP";
+update student set sNo = 201215124,sName = "ZHANG LI" where sNo = 201515125;
+update v_student set sName = "HASDW" where sNo = 201215121;
+update v_student set sName="HAHWASDAW" where sNo=201215121 ;
+UPDATE teacher SET special="C" where id=1; 
+-->
+<!-- 更新的配置 -->
+<operation name = "updateX" type = "UPDATE">
+	<tables>
+		<table tableName = "course">
+			<column>
+				<name>title</name>
+				<mapName>destTitle</mapName><!--如果不配置mapName，就默认赋值为NULL-->
+			</column>
+		</table>
+	</tables>
+	<conditions>
+		<condition>
+			<tableName>course</tableName><!-- 表名 --><!-- 用于生成t_user.userID,如果多个表之间没有命名冲突的话，可以省略 -->
+			<columnName>title</columnName><!-- 数据库使用的属性名 --><!-- 如果省略，则mapName默认为columnName -->
+			<mapName>srcTitle</mapName><!--客户端使用的属性名，使用该名称，重map中取出数据-->
+			<connection>and</connection>
+			<sign>=</sign><!-- 如果省略，默认为等号 -->
+		</condition>
+	</conditions>
+</operation>
+
+
+
+
+<!-- 
+INSERT INTO view1 VALUES(2,"awd","WANS");
+INSERT INTO time VALUES(NOW());
+INSERT INTO mytable VALUES(4,"zxc","man","HELLO MYSQL");
+INSERT INTO student VALUES(NULL,"QWE","W",18); 
+-->
+<!-- 插入配置 -->
+<operation name = "insertX" type = "INSERT">
+	<tables>
+		<table tableName = "x">	<!-- 这里的column必须要配出来，不然取不到  -->
+			<column>
+				<name>id</name>
+				<mapName>id</mapName>
+			</column>
+			<column>
+				<name>date</name>
+				<mapName>date</mapName>
+			</column>
+			<column>
+				<name>idx</name><!--如果不配置mapName，就默认赋值为NULL-->
+			</column>
+		</table>
+	</tables>
+	<conditions>
+	</conditions>
+</operation>
+
+
+<!-- 
+SELECT name,sex FROM student;
+SELECT name,SEX FROM student WHERE age>18;
+SELECT * FROM student WHERE id IN(1,3,5,7,9);
+SELECT * FROM student WHERE name LIKE 'G_J';
+SELECT * FROM student WHERE age IS NULL ;
+SELECT * FROM student WHERE age IS NOT NULL;
+SELECT * FROM student WHERE sex='W' OR age=18; 
+SELECT * FROM student ORDER BY age DESC;
+-->
+<!-- 配置单表查询 -->
+<operation name = "selectCourse" type = "SELECT">
+	<tables>
+		<table tableName = "course">	<!-- 不配column就默认对该表的全部column进行操作 -->
+			<column>
+				<name>*</name>
+			</column>
+		</table>
+	</tables>
+	<conditions>
+		<condition>
+			<tableName>course</tableName><!-- 表名 --><!-- 用于生成t_user.userID,如果多个表之间没有命名冲突的话，可以省略 -->
+			<columnName>course_ID</columnName><!-- 数据库使用的属性名 --><!-- 如果省略，则mapName默认为columnName -->
+			<mapName>courseID</mapName><!--客户端使用的属性名，使用该名称，重map中取出数据-->
+			<connection>and</connection>
+			<sign>&lt;</sign><!-- 如果省略，默认为等号 -->
+		</condition>
+		<condition>
+			<tableName>course</tableName><!-- 表名 --><!-- 用于生成t_user.userID,如果多个表之间没有命名冲突的话，可以省略 -->
+			<columnName>credits</columnName><!-- 数据库使用的属性名 --><!-- 如果省略，则mapName默认为columnName -->
+			<mapName>credits</mapName><!--客户端使用的属性名，使用该名称，重map中取出数据-->
+			<connection>and</connection>
+			<sign>=</sign><!-- 如果省略，默认为等号 -->
+		</condition>
+	</conditions>
+	<orders>
+		<order>
+			<tableName>course</tableName>
+			<columnName>course_ID</columnName>
+		</order>
+	</orders>
+</operation>
+
+
+
+
+
+
+<!-- 
+SELECT student.id,student.name,course.name FROM student,course WHERE course_id=course.id ORDER BY course.id ASC;
+SELECT student.id,student.name,course.name FROM student RIGHT JOIN course ON student.course_id=course.id;
+SELECT student.id,student.name,course.name
+FROM course LEFT JOIN student
+ON course.id=student.course_id;
+SELECT name,SUBDATE(2015-10-10,INTERVAL 'age' YEAR) FROM student;
+SELECT dateTime,age,DATE_FORMAT(SUBDATE(dateTime,INTERVAL age YEAR),'%Y') AS birth FROM time,student;
+SELECT sNo No,sName Name,sAge Age FROM student WHERE sAge BETWEEN 20 AND 23 ; 
+-->
+
+<!-- 
+SELECT t_user.userID,t_favorite.favoriteID,t_spectrum.spectrumID
+FROM t_user,t_favorite,t_favoriteSpectrum,t_spectrum
+WHERE t_user.userID = t_favorite.userID
+AND t_favorite.favoriteID = t_favoriteSpectrum.favoriteID
+AND t_favoriteSpectrum.spectrumID = t_spectrum.spectrumID 
+-->
+
+<!--
+SELECT t_user.userID,t_favorite.favoriteID,t_spectrum.spectrumID FROM
+t_user INNER JOIN t_favorite ON t_user.userID = t_favorite.userID
+INNER JOIN t_favoriteSpectrum ON t_favorite.favoriteID = t_favoriteSpectrum.favoriteID
+INNER JOIN t_spectrum ON t_favoriteSpectrum.spectrumID = t_spectrum.spectrumID
+WHERE t_user.userID = 2
+-->
+<!-- 多表查询 -->
+<operation name = "selectUser" type = "SELECT">
+	<tables>
+		<table tableName = "t_user" >
+			<column>
+				<name>userID</name>
+			</column>
+		</table>
+		<table tableName = "t_favorite">
+			<column>
+				<name>favoriteID</name>
+			</column>
+		</table>
+		<table tableName = "t_spectrum">
+			<column>
+				<name>spectrumID</name>
+			</column>
+		</table>
+	</tables>
+	<!-- join有顺序限制，配置在前面的join最先出现-->
+	<joins>
+		<join>
+			<table tableName = "t_user">
+				<key>userID</key>
+			</table>
+			<table tableName = "t_favorite">
+				<key>userID</key>
+			</table>
+			<type>INNER JOIN</type>	<!-- inner join -->
+		</join>
+		<join>
+			<table tableName = "t_favorite">
+				<key>favoriteID</key>
+			</table>
+			<table tableName = "t_favoriteSpectrum">
+				<key>favoriteID</key>
+			</table>
+			<type>INNER JOIN</type>	<!-- inner join -->
+		</join>
+		<join>
+			<table tableName = "t_favoriteSpectrum">
+				<key>t_specturmID</key>
+			</table>
+			<table tableName = "t_favoriteSpectrum">
+				<key>t_specturmID</key>
+			</table>
+			<type>INNER JOIN</type>	<!-- inner join -->
+		</join>
+	</joins>
+	<conditions>
+		<condition>
+			<tableName>t_user</tableName><!-- 表名 --><!-- 用于生成t_user.userID,如果多个表之间没有命名冲突的话，可以省略 -->
+			<columnName>userID</columnName><!-- 数据库使用的属性名 --><!-- 如果省略，则mapName默认为columnName -->
+			<mapName>userID</mapName><!--客户端使用的属性名，使用该名称，重map中取出数据-->
+			<connection>and</connection>
+			<sign>=</sign><!-- 如果省略，默认为等号 -->
+		</condition>
+	</conditions>
+</operation>
+
+</SQLConfig>

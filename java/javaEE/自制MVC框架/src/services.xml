@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    
+    1.<modele />标签指模块，用来更方便的组织<service />标签
+    
+    2.<service name="" class="" method="" power=""/>其中的
+      name属性用于区别其他的<service />标签，在一个module中唯一，
+      class指定处理业务的类，method指定处理业务的方法,
+      power指定拥有此权限的roleID
+                
+    3.<bean class="" />标签，当为一个<service />标签配置了
+      <bean />标签时，BaseServlet会尽最大努力将表单中的数据封装成class属性对应的bean
+    
+    4.<result name="" type="" location=""/>,
+      name属性指定逻辑视图，type属性指定跳转方式，
+      location属性指定物理视图（可以作为<result />标签的文本子节点）。
+    
+ -->
+
+<services>
+    
+    <module name="user" namespace="/user">
+        <service name="login" class="cn.edu.jxau.service.UserService" method="login">
+            <result name="updateSession">/WEB-INF/trade.jsp</result>
+            <result name="failure">/WEB-INF/login.jsp</result>
+        </service>
+        
+        <service name="logout" class="cn.edu.jxau.service.UserService" method="logout">
+            <result name="invalidateSession">/WEB-INF/login.jsp</result>
+        </service>
+    </module>
+    
+    <module name="file" namespace="/file">
+        <service name="download" class="cn.edu.jxau.service.FileService" method="download">
+            <result name="download">/fileList.jsp</result>
+        </service>
+        <service name="queryFiles" class="cn.edu.jxau.service.FileService" method="queryFiles">
+            <result name="success">/fileList.jsp</result>
+            <result name="failure">/messgae.jsp</result>
+        </service>
+        <service name="upload" class="cn.edu.jxau.service.FileService" method="upload">
+            <result name="success">/file/queryFiles.do</result>
+        </service>
+    </module>
+    
+</services>
+

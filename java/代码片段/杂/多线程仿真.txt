@@ -1,0 +1,119 @@
+//Í¿À°ÓëÅ×¹â
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class Test1
+{
+	public static void main(String[] args)
+	{
+		Car c = new Car();
+		WaxOn on = new WaxOn(c);
+		WaxOff off = new WaxOff(c);
+		ExecutorService exec = Executors.newCachedThreadPool();
+		exec.execute(on);
+		exec.execute(off);
+		try
+		{
+			TimeUnit.SECONDS.sleep(10);
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+		on.cancel();
+		off.cancel();
+		exec.shutdown();
+	}
+}
+class Car
+{
+	private boolean isWax;
+	public Car()
+	{
+		isWax = false;
+	}
+	public synchronized void wax() throws InterruptedException
+	{
+		System.out.println("--- wax");
+		TimeUnit.MILLISECONDS.sleep(500);
+		isWax = true;
+		this.notifyAll();
+	}
+	public synchronized void buff() throws InterruptedException
+	{
+		System.out.println("--- buff");
+		TimeUnit.MILLISECONDS.sleep(100);
+		isWax = false;
+		this.notifyAll();
+	}
+	public synchronized void waitForWaxing() throws InterruptedException
+	{
+		while(isWax==false)
+			wait();
+	}
+	public synchronized void waitForBuffing() throws InterruptedException
+	{
+		while(isWax==true)
+			wait();
+	}
+}
+class WaxOn implements Runnable
+{
+	private boolean isCancel;
+	private Car c;
+	public WaxOn(Car c)
+	{
+		isCancel = false;
+		this.c = c;
+	}
+	public void cancel()
+	{
+		isCancel = true;
+	}
+	public void run()
+	{
+		try
+		{
+			while(!isCancel)
+			{
+                c.wax();
+				c.waitForBuffing();
+			}
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+}
+class WaxOff implements Runnable
+{
+	private boolean isCancel;
+	private Car c;
+	public WaxOff(Car c)
+	{
+		isCancel = false;
+		this.c = c;
+	}
+	public void cancel()
+	{
+		isCancel = true;
+	}
+	public void run()
+	{
+		try
+		{
+			while(!isCancel)
+			{
+				c.waitForWaxing();
+				c.buff();
+			}
+		}
+		catch(InterruptedException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+	}
+}

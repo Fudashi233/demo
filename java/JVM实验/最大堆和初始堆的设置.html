@@ -1,0 +1,123 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title></title>
+<style>#BAIDU_DSPUI_FLOWBAR,.adsbygoogle,.ad,div[class^="ad-widsget"],div[id^="div-gpt-ad-"],a[href*="@"][href*=".exe"],a[href*="/?/"][href*=".exe"],.adpushwin{display:none !important;}</style><style id="system" type="text/css">h1,h2,h3,h4,h5,h6,p,blockquote {    margin: 0;    padding: 0;}body {    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;    font-size: 13px;    line-height: 18px;    color: #737373;    margin: 10px 13px 10px 13px;}a {    color: #0069d6;}a:hover {    color: #0050a3;    text-decoration: none;}a img {    border: none;}p {    margin-bottom: 9px;}h1,h2,h3,h4,h5,h6 {    color: #404040;    line-height: 36px;}h1 {    margin-bottom: 18px;    font-size: 30px;}h2 {    font-size: 24px;}h3 {    font-size: 18px;}h4 {    font-size: 16px;}h5 {    font-size: 14px;}h6 {    font-size: 13px;}hr {    margin: 0 0 19px;    border: 0;    border-bottom: 1px solid #ccc;}blockquote {    padding: 13px 13px 21px 15px;    margin-bottom: 18px;    font-family:georgia,serif;    font-style: italic;}blockquote:before {    content:"C";    font-size:40px;    margin-left:-10px;    font-family:georgia,serif;    color:#eee;}blockquote p {    font-size: 14px;    font-weight: 300;    line-height: 18px;    margin-bottom: 0;    font-style: italic;}code, pre {    font-family: Monaco, Andale Mono, Courier New, monospace;}code {    background-color: #fee9cc;    color: rgba(0, 0, 0, 0.75);    padding: 1px 3px;    font-size: 12px;    -webkit-border-radius: 3px;    -moz-border-radius: 3px;    border-radius: 3px;}pre {    display: block;    padding: 14px;    margin: 0 0 18px;    line-height: 16px;    font-size: 11px;    border: 1px solid #d9d9d9;    white-space: pre-wrap;    word-wrap: break-word;}pre code {    background-color: #fff;    color:#737373;    font-size: 11px;    padding: 0;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style></head>
+<body><h1>最大堆和初始堆的设置</h1>
+<h2>源码</h2>
+<pre><code class="lang-java">package test;
+
+import java.lang.management.ManagementFactory;
+
+public class Test {
+
+    private static int count = 0;
+
+    public static void main(String[] args) {
+
+        System.out.printf("max memory:%d\n",getMaxMemory());
+        System.out.printf("free memory:%d\n",getFreeMemory());
+        System.out.printf("total memory:%d\n",getTotalMemory());
+
+        /* 分配1M空间 */
+        System.out.println("分配1M空间");
+        byte[] room = new byte[1*1024*1024];
+
+        System.out.printf("max memory:%d\n",getMaxMemory());
+        System.out.printf("free memory:%d\n",getFreeMemory());
+        System.out.printf("total memory:%d\n",getTotalMemory());
+
+        /* 分配4M空 */
+        System.out.println("分配4M空间");
+        room = new byte[1*1024*1024];
+
+        System.out.printf("max memory:%d\n",getMaxMemory());
+        System.out.printf("free memory:%d\n",getFreeMemory());
+        System.out.printf("total memory:%d\n",getTotalMemory());
+    }
+
+    /**
+     * 打印虚拟机配置参数
+     */
+    private static void printCommand() {
+        System.out.printf("VM arguments:%s\n",ManagementFactory.getRuntimeMXBean().getInputArguments());
+    }
+
+
+    private static long getMaxMemory() {
+        return Runtime.getRuntime().maxMemory();
+    }
+
+    private static long getFreeMemory() {
+        return Runtime.getRuntime().freeMemory();
+    }
+
+    private static long getTotalMemory() {
+        return Runtime.getRuntime().totalMemory();
+    }
+}</code></pre>
+<h2>VM arguments</h2>
+<p>-Xmx20M
+-Xms1M
+-XX:+PrintCommandLineFlags
+-XX:+PrintGCDetails
+-XX:+UseSerialGC
+
+</p>
+<h2>console</h2>
+<p>-XX:InitialHeapSize=1048576 -XX:MaxHeapSize=20971520 -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseSerialGC 
+</p>
+<hr>
+<p>[GC (Allocation Failure) [DefNew: 1024K-&gt;127K(1152K), 0.0029519 secs] 1024K-&gt;743K(1920K), 0.0029893 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+max memory:20316160
+free memory:760072
+total memory:1966080
+</p>
+<hr>
+<p>分配1M空间
+[GC (Allocation Failure) [DefNew: 561K-&gt;127K(1152K), 0.0016202 secs][Tenured: 770K-&gt;898K(960K), 0.0022353 secs] 1177K-&gt;898K(2112K), [Metaspace: 3526K-&gt;3526K(1056768K)], 0.0039226 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+max memory:20316160
+free memory:1779360
+total memory:3768320
+</p>
+<hr>
+<p>分配4M空间
+[GC (Allocation Failure) [DefNew: 19K-&gt;0K(1152K), 0.0002951 secs][Tenured: 1922K-&gt;1922K(2528K), 0.0029024 secs] 1942K-&gt;1922K(3680K), [Metaspace: 3527K-&gt;3527K(1056768K)], 0.0032496 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+max memory:20316160
+free memory:1812624
+total memory:4857856
+</p>
+<hr>
+<p>Heap
+ def new generation   total 1536K, used 1079K [0x00000000fec00000, 0x00000000feda0000, 0x00000000ff2a0000)
+  eden space 1408K,  76% used [0x00000000fec00000, 0x00000000fed0df60, 0x00000000fed60000)
+  from space 128K,   0% used [0x00000000fed60000, 0x00000000fed60000, 0x00000000fed80000)
+  to   space 128K,   0% used [0x00000000fed80000, 0x00000000fed80000, 0x00000000feda0000)
+ tenured generation   total 3208K, used 1922K [0x00000000ff2a0000, 0x00000000ff5c2000, 0x0000000100000000)
+   the space 3208K,  59% used [0x00000000ff2a0000, 0x00000000ff480a28, 0x00000000ff480c00, 0x00000000ff5c2000)
+ Metaspace       used 3534K, capacity 4562K, committed 4864K, reserved 1056768K
+  class space    used 386K, capacity 390K, committed 512K, reserved 1048576K
+
+</p>
+<h2>总结</h2>
+<ol>
+<li>-XX:+PrintCommandLineFlags会打印传递给虚拟的，显式或隐式参数，与之配对的还有<pre><code>-XX:+PrintVMOptions
+-XX:+PrintCommandLineFlags
+-XX:+PrintFlagsFinal 打印出JVM运行时的参数
+-XX:+PrintFlagsInitial 打印出JVM的默认值</code></pre>
+</li>
+<li>-XX:InitialHeapSize=1048576指定的值就是1<em>1024</em>1024,与VM arguments指定的一样
+-XX:MaxHeapSize=20971520指定的值也与VM arguments指定的值一样<pre><code>-Xmx20M
+-Xms1M</code></pre>
+</li>
+<li><p>根据GC日志，堆的最大大小（max memory）并不与VM agruments指定的一直，这是因为
+GC运行本身需要占据一定的空间，而且堆的字节对齐也会浪费一定空间，所以VM arguments指定的堆大小仅仅是一个近似值
+GC日志中打印的堆大小是真实值。总之，实际可用堆大小与-Xmx指定的值之间有一定的偏差。</p>
+</li>
+<li><p>当堆大小不满足应用程序所申请的空间时，其会自行扩大（受到-Xmx的限制）或者触发GC</p>
+</li>
+<li><p>调优技巧：准确估计堆运行时的最大值，然后将-Xmx和-Xms都设置为这个值(略大)，从而减少垃圾
+回收次数，提高性能</p>
+</li>
+</ol>
+<p>Edit By <a href="http://mahua.jser.me">MaHua</a></p>
+</body></html>

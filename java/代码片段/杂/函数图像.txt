@@ -1,0 +1,233 @@
+import javax.swing.*;
+import java.awt.Graphics;
+import java.awt.Polygon;
+import java.awt.Color;
+import java.awt.Font;
+public class a
+{
+	public static void main(String[] args)
+	{
+		MyFrame frame=new MyFrame();
+		frame.setSize(500,450);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+}
+
+abstract class MyPanel extends JPanel
+{
+	private Polygon po;
+	public MyPanel()
+	{
+		po=new Polygon();
+	}
+	protected abstract double f(double x);
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		////////////draw line//////////////
+		g.drawLine(200,0,200,400);
+		g.drawLine(200,0,195,5);
+		g.drawLine(200,0,205,5);
+			
+		g.drawLine(0,200,400,200);
+		g.drawLine(400,200,395,205);
+		g.drawLine(400,200,395,195);
+		g.setColor(Color.RED);
+		for(int x=-99;x<100;x++)
+			po.addPoint(x+200,200-(int)f(x));
+		g.drawPolyline(po.xpoints,po.ypoints,po.npoints);
+	}
+}
+
+
+class func extends MyPanel
+{
+	protected double f(double x)
+	{
+		if(x>0)
+		    return 50*Math.log(x*0.5);
+		else
+			return 0;
+	}
+}
+
+
+class MyFrame extends JFrame
+{
+	public MyFrame()
+	{
+		super("Windows");
+		MyPanel p=new func();
+		add(p);
+
+	}
+}
+
+
+
+
+
+
+// class func extends MyPanel
+// {
+	// protected double f(double x)
+	// {
+		// x=x/100*Math.PI*2;
+		// return 50*Math.sin(x);
+	// }
+// }
+
+
+// class func extends MyPanel
+// {
+	// protected double f(double x)
+	// {
+		// return x*x;
+	// }
+ 	// protected void PaintComponent(Graphics g)
+	// {
+		// super.paintComponent(g);
+		// Font f=new Font("Californian FB",Font.BOLD,20);
+		// g.setFont(f);
+		// g.drawString("Y=X^2",50,50);
+	// }
+// } 
+
+
+
+
+
+
+
+
+
+
+
+
+import javax.swing.JApplet;	
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import java.awt.Graphics;
+import java.awt.BorderLayout;
+import java.awt.Polygon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Sin extends JApplet
+{
+	private Pane p;
+	private Timer time;
+	public Sin()
+	{
+		p=new Pane();
+		this.add(p,BorderLayout.CENTER);
+		time=new Timer(100,new TimerListener());
+		time.start();
+	}
+	class TimerListener implements ActionListener
+	{
+        public void actionPerformed(ActionEvent e)
+		{
+			p.end+=5;
+			repaint();
+		}		
+	}
+}
+class Pane extends JPanel
+{
+	private Polygon po;
+	private double scaleFactor;
+	public int end;
+	public Pane()
+	{
+		po=new Polygon();
+		scaleFactor=100;
+		end=5;
+	}
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		int h=this.getHeight()/2;
+		int w=this.getWidth();
+		for(int x=-w/2;x<=w/2;x++)
+			po.addPoint(x+w/2,h-(int)(scaleFactor*Math.sin(2*Math.PI*(x/(w/2.0)))));
+		if(end>=w)
+			end=0;
+		int[] x=new int[end];
+		int[] y=new int[end];
+		for(int i=0;i<x.length;i++)
+		{
+			x[i]=po.xpoints[i];
+			y[i]=po.ypoints[i];
+		}
+		//g.drawLine(0,h,w,h);
+		g.drawPolyline(x,y,x.length);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import javax.swing.JApplet;	
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import java.awt.Graphics;
+import java.awt.BorderLayout;
+import java.awt.Polygon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Sin extends JApplet
+{
+	private Pane p;
+	private Timer time;
+	public Sin()
+	{
+		p=new Pane();
+		this.add(p,BorderLayout.CENTER);
+		time=new Timer(100,new TimerListener());
+		time.start();
+	}
+  	class TimerListener implements ActionListener
+	{
+        public void actionPerformed(ActionEvent e)
+		{
+			p.start-=1;
+			repaint();
+		}		
+	}
+}
+class Pane extends JPanel
+{
+	private double scaleFactor;
+	public int start;
+	public Pane()
+	{
+		start=0;
+		scaleFactor=30;
+	}
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		for(int i=0;i<this.getWidth();i+=5)
+		{
+			int y=200-(int)(100*Math.sin((Math.PI/180*i+start)));
+		    g.drawString("*",i,y);
+		}
+		System.out.println("paint over");
+	}
+}
