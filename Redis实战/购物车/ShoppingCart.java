@@ -17,6 +17,7 @@ public class ShoppingCart {
     private JedisPool jedisPool;
 
     public ShoppingCart() {
+        
 
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxIdle(30);
