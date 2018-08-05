@@ -20,9 +20,26 @@ public class Application {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
 
+        test2();
+    }
+
+    private static void test1() throws InterruptedException, ExecutionException, TimeoutException {
+
         Shop shop = new Shop("Seven-eleven");
         System.out.println("before invoke:" + System.currentTimeMillis());
         Future<Double> priceFuture = shop.getPriceAsync("book");
+        System.out.println("after invoke:" + System.currentTimeMillis());
+        // do something in here
+        Double price = priceFuture.get(5, TimeUnit.SECONDS);
+        System.out.println("thr price of book is:" + price);
+        System.out.println("finish:" + System.currentTimeMillis());
+    }
+
+    private static void test2() throws InterruptedException, ExecutionException, TimeoutException {
+
+        Shop shop = new Shop("Seven-eleven");
+        System.out.println("before invoke:" + System.currentTimeMillis());
+        Future<Double> priceFuture = shop.getPriceWithException("book");
         System.out.println("after invoke:" + System.currentTimeMillis());
         // do something in here
         Double price = priceFuture.get(5, TimeUnit.SECONDS);

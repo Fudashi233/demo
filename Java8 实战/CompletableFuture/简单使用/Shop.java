@@ -29,12 +29,14 @@ public class Shop {
 
     public Future<Double> getPriceAsync(String productName) {
 
-        CompletableFuture<Double> future = new CompletableFuture<>();
-        new Thread(() -> {
-            double price = getPrice(productName);
-            future.complete(price);
-        }).start();
-        return future;
+        //CompletableFuture<Double> future = new CompletableFuture<>();
+        //new Thread(() -> {
+        //    double price = getPrice(productName);
+        //    future.complete(price);
+        //}).start();
+        //return future;
+
+        return CompletableFuture.supplyAsync(() -> getPrice(productName));
     }
 
     public Future<Double> getPriceWithException(String productName) {
