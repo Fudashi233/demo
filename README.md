@@ -1,2 +1,2 @@
 # demo
-各种code demo.
+各种code demo
