@@ -76,7 +76,7 @@ curl -H "Content-Type: application/json" -s -XPOST "localhost:9200/get-together/
 curl -H "Content-Type: application/json" -X PUT 'localhost:9200/new-index'
 
 # 查询所有索引
-curl 'localhost:9200/_cat/indices?v'
+curl -X GET 'localhost:9200/_cat/indices?v'
 
 health status index        uuid                   pri rep docs.count docs.deleted store.size pri.store.size
 yellow open   blog         4m40ndjWSgKTr66iKmLpCw   5   1          0            0      1.2kb          1.2kb
@@ -122,6 +122,7 @@ curl -X GET 'localhost:9200/get-together/group/_search?q=elasticsearch&_source=n
 curl -X GET 'localhost:9200/get-together/group/_search?q=elasticsearch&pretty'
 curl -X GET 'localhost:9200/get-together/group/_search?pretty'
 curl -X GET 'localhost:9200/get-together/group/2?pretty'
+curl -X GET 'localhost:9200/get-together/group/_search?q=name:elasticsearch&pretty'
 
 {
   "took" : 5, # 检索时间
@@ -455,3 +456,165 @@ curl -X GET 'localhost:9200/get-together/group/7?pretty'
   "_id" : "7",
   "found" : false
 }
+
+
+# 获取某个索引的映射
+curl -H 'Content-type:application/json' -X PUT 'localhost:9200/get-together0/new-events/1?pretty' -d '{
+  "name":"Late night with elasticsearch",
+  "date":"2018-10-25"
+}'
+
+curl -X GET 'localhost:9200/get-together0/_mapping/new-events?pretty'
+curl -X GET 'localhost:9200/get-together0/new-events/_mapping?pretty'
+
+# 定义新的映射
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/get-together0/_mapping/new-events?pretty' -d '{
+  "new-events":{
+    "properties":{
+      "host":{
+        "type":"text"
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/employees/' -d '
+{
+    "mappings":{
+        "employee":{
+             "properties": {
+                 "intro":{"type":"text"}
+             }
+        }
+    }
+}'
+
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/employees/employee/_mapping?pretty' -d '
+{
+  "employee":{
+        "properties": {
+            "name":{
+              "type":"keyword"
+          }
+        }
+  }
+}'
+
+
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/employees/employee/_mapping?pretty' -d '{
+  "employee":{
+    "properties":{
+      "birthday":{
+        "type":"date",
+        "format":"YYYY MMM DD"
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/employees/employee/3?pretty' -d '{
+  "name":"123456",
+  "birthday":"Oct 25 2018"
+}'
+
+curl -X GET 'localhost:9200/employees/_mapping?pretty'
+curl -X GET 'localhost:9200/employees/employee/_mapping?pretty'
+
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/employees/employee/1?pretty' -d '{
+  "name":"hello world",
+  "intro":"ni hao"
+}'
+
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/employees/employee/2?pretty' -d '{
+  "name":"Enterprise search London get-together",
+  "intro":"enterprise search"
+}'
+
+
+curl -X GET 'localhost:9200/employees/employee/_search?q=name:hello&pretty';
+curl -X GET 'localhost:9200/employees/employee/_search?q=intro:ni&pretty';
+curl -X GET 'localhost:9200/employees/employee/_search?q=enterprise&pretty';
+curl -X GET 'localhost:9200/get-together/group/_search?q=enterprise&pretty'
+
+# 获取某个索引的所有数据
+curl -X GET 'localhost:9200/get-together/_search?pretty'
+curl -X GET 'localhost:9200/get-together0/_search?pretty'
+curl -X GET 'localhost:9200/blog/_search?pretty'
+curl -X GET 'localhost:9200/new-index/_search?pretty'
+
+
+# 根据id删除某个文档
+curl -X DELETE 'localhost:9200/get-together/group/5'
+
+{
+    "_index":"get-together",
+    "_type":"group",
+    "_id":"5",
+    "_version":2,
+    "result":"deleted",
+    "_shards":{
+        "total":2,
+        "successful":1,
+        "failed":0
+    },
+    "_seq_no":1,
+    "_primary_term":2
+}
+
+{
+  "_index" : "get-together",
+  "_type" : "group",
+  "_id" : "5",
+  "_version" : 3,
+  "result" : "not_found",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 2,
+  "_primary_term" : 2
+}
+
+# 根据查询条件删除文档
+
+# 删除类型
+curl -X DELETE 'localhost:9200/get-together/group'
+
+# 删除索引
+curl -X DELETE 'lcoalhost:9200/blog?pretty'
+
+# 关闭/开启索引
+curl -X POST 'localhost:9200/get-together/_close?pretty'
+curl -X POST 'localhost:9200/get-together/_open?pretty'
+
+# 只查看name字段
+curl -X GET 'localhost:9200/get-together/group/1?pretty&_source=name'
+
+curl -X GET 'localhost:9200/_search?q=_index:get-together'
+
+curl -X GET 'localhost:9200/get-together/_mapping/with_index'
+
+curl -X GET 'localhost:9200/get-together/group/2'
+
+# 更新文档
+curl -H 'content-type:application/json' -X POST 'localhost:9200/get-together/group/2/_update' -d '{
+  "doc":{
+    "Organizer":"Roy"
+  }
+}'
+
+curl -H 'content-type:application/json' -X POST 'localhost:9200/get-together/group/2/_update' -d '{
+  "doc":{
+    "organizer":"roy"
+  },
+  "upsert":{
+    "name":"Elasticsearch Denver",
+    "organizer":"roy"
+  }
+}'
+
+# 更新文档：索引文档的方式覆盖文档
+curl -H 'content-type:application/json' -X PUT 'localhost:9200/get-together/group/2?version=5&pretty' -d '{
+  "Organizer":"fulei04"
+}'
