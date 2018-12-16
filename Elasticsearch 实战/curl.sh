@@ -618,3 +618,177 @@ curl -H 'content-type:application/json' -X POST 'localhost:9200/get-together/gro
 curl -H 'content-type:application/json' -X PUT 'localhost:9200/get-together/group/2?version=5&pretty' -d '{
   "Organizer":"fulei04"
 }'
+
+# 搜索请求的基本模块，分页：form&size
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&size=2'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&from=0&size=1'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&from=1&size=1'
+
+# 搜索请求的基本模块，排序：sort
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&sort=created_on'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&sort=created_on:desc'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&sort=created_on:asc'
+
+# 搜索请求的基本模块，限制恢复的source：_source
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&_source=name,created_on'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&_source=name'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=name:elasticsearch'
+
+# match_all：查询全部文档
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_all":{}
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match_all":{
+        }
+      }
+    }
+  }
+}'
+
+# match：匹配查询
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match":{
+      "name":"Enterprise"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match":{
+          "name":"Enterprise"
+        }
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match":{
+      "description":"elasticsearch"
+    }
+  }
+}'
+
+# query_string
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=nosql'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string":{
+      "query":"nosql"
+    }
+  }
+}'
+
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=description:nosql'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string":{
+      "query":"nosql",
+      "default_field":"description"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string":{
+      "query":"elasticsearch san francisco",
+      "default_field":"name",
+      "default_operator":"AND"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string":{
+      "query":"name:elasticsearch AND name:san AND name:francisco"
+    }
+  }
+}'
+
+# term
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "term":{
+      "name":"Elasticsearch"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match":{
+      "name":"Elasticsearch"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match_all":{}
+      }
+      "filter":{
+        "term":{
+          "tags":"elasticsearch"
+        }
+      }
+    }
+  }
+}'
+
+# terms
+minimum_should_match 已废弃，可以用should替代
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "terms":{
+      "tags":["jvm","java","hadoop"]
+    }
+  },
+  "_source":["tags"]
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "minimum_should_match":2,
+      "should":[
+        {
+          "term":{
+            "tags":"jvm"
+          }
+        },
+        {
+          "term":{
+            "tags":"java"
+          }
+        },
+        {
+          "term":{
+            "tags":"hadoop"
+          }
+        }
+      ]
+    }
+  },
+  "_source":["tags"]
+}'
+
+
