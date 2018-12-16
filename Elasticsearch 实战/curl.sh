@@ -1003,9 +1003,35 @@ curl -H 'Content-type:application/json' -X GET 'localhost:9200/get-together/grou
     "bool":{
       "filter":{
         "match":{
-       "name":"elasticsearch"
+        "name":"elasticsearch"
         }
       }
     }
   }
 }'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+        "filter":{
+          "bool":{
+            "should":[
+              {
+                "term":{
+                  "members":"igor"
+                }
+              },
+              {
+                "term":{
+                  "members":"mike"
+                }
+              }
+            ],
+            "minimum_should_match":1
+          }
+        }
+      }
+    }
+  }
+}'
+
