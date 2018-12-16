@@ -673,13 +673,119 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
   }
 }'
 
+
+[match] query does not support multiple fields, found [description] and [name]
 curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
   "query":{
     "match":{
-      "description":"elasticsearch"
+      "description":"elasticsearch",
+      "name":"elasticsearch"
     }
   }
 }'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match":{
+      "name":"Elasticsearch Denver"
+    }
+  },
+  "_source":"name"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match":{
+      "name":{
+        "query":"Elasticsearch Denver",
+        "operator":"AND"
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+
+# match_phrase
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase":{
+      "name":{
+        "query":"Enterprise search"
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase":{
+      "description":{
+        "query":"Come required",
+        "slop":200
+      }
+    }
+  },
+  "_source":"description"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase":{
+      "name":{
+        "query":"Enterprise London",
+        "slop":5
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase":{
+      "name":{
+        "query":"search Enterprise"
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+# phrase_prefix
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase_prefix":{
+      "name":"Elasticsearch den",
+    }
+  },
+  "_source":"name"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase_prefix":{
+      "name":{
+         "query":"E",
+         "max_expansions": 1
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+# multi_match
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "multi_match":{
+      "query":"Elasticsearch hadoop",
+      "fields":["name","description","tags"]
+    }
+  },
+  "_source":["name","description","tags"]
+}'
+
 
 # query_string
 curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=nosql'
@@ -768,7 +874,7 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
 curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
   "query":{
     "bool":{
-      "minimum_should_match":2,
+      "minimum_should_match":1,
       "should":[
         {
           "term":{
@@ -791,4 +897,115 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
   "_source":["tags"]
 }'
 
+# bool 查询：mush、must_not、should查询
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":[
+        {
+          "term":{
+            "tags":"java"
+          }
+        }
+      ]
+    }
+  }
+}'
 
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":[
+        {
+          "term":{
+            "members":"lee"
+          }
+        }
+      ]
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "should":[
+        {
+          "term":{
+            "members":"lee"
+          }
+        },
+        {
+          "term":{
+            "members":"mike"
+          }
+        }
+      ]
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must_not":[
+        {
+          "range":{
+            "created_on":{
+                "lt":"2010"
+            }
+          }
+        }
+      ]
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":[
+        {
+          "term":{
+            "members":"lee"
+          }
+        }
+      ],
+      "should":[
+        {
+          "term":{
+            "members":"igor"
+          }
+        },
+        {
+          "term":{
+            "members":"mike"
+          }
+        }
+      ],
+      "must_not":[
+        {
+          "range":{
+            "created_on":{
+              "lt":"2012-08"
+            }
+          }
+        }
+      ],
+      "minimum_should_match":"50%"
+    }
+  }
+}'
+
+
+curl -H 'Content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "filter":{
+        "match":{
+       "name":"elasticsearch"
+        }
+      }
+    }
+  }
+}'
