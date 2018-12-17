@@ -1035,3 +1035,77 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
   }
 }'
 
+# wildcard 查询
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "wildcard":{
+      "description":"grou*"
+    }
+  }
+}'
+
+curl -X GET 'localhost:9200/get-together/group/_search?pretty'
+
+# 字段存在性
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "filter":{
+        "exists":{
+          "field":"members"
+        }
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "filter":{
+        "exists":{
+          "field":"Organizer"
+        }
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "exists":{
+          "field":"members"
+        }
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must_not":{
+        "exists":{
+          "field":"members"
+        }
+      }
+    }
+  }
+}'
+
+# 将任何查询转变为过滤器
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "filter":{
+        "query":{
+          "query_string":{
+            "query":"name:denver"
+          }
+        }
+      }
+    }
+  }
+}'
