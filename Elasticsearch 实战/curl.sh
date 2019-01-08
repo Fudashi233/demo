@@ -1109,3 +1109,69 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
     }
   }
 }'
+
+
+curl -X GET 'localhost:9200/get-together/group/_search'
+
+curl -X GET 'localhost:9200/get-together/_mapping?pretty'
+
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&from=0&size=1'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&from=1&size=1'
+
+# increase decrease
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&sort=created_on:asc'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&sort=created_on:desc'
+
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&_source=Organizer'
+
+
+
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=elasticse'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=elasticsearch'
+curl -X GET 'localhost:9200/get-together/group/_search?pretty&q=description:elasticsearch'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query" : {
+    "match_all" : {}
+  },
+  "from":1,
+  "size":1
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query" : {
+    "match_all" : {}
+  },
+  "_source":["name","date"]
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query" : {
+    "match_all" : {}
+  },
+  "_source":{
+    "include":["location_*","date"],
+    "exclude":["location_geo*"]
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query" : {
+    "match_all" : {}
+  },
+  "_source":{
+    "include":["location_*","date"],
+    "exclude":["location_geo*"]
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query" : {
+    "match_all" : {}
+  },
+  "sort":[
+    {"created_on":"asc"},
+    "_score"
+  ]
+}'
