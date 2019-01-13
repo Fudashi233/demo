@@ -1175,3 +1175,275 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
     "_score"
   ]
 }'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match" :{
+      "tags":"hadoop"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match" :{
+      "tags":"Hadoop"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "term" :{
+      "tags":"hadoop"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string" :{
+      "query":"nosql"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string" :{
+      "query":"elasticsearch"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string" :{
+      "query":"description:elasticsearch"
+    }
+  }
+}'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string" :{
+      "default_field":"description",
+      "query":"elasticsearch"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string" :{
+      "query":"-Organizer:fulei04"
+    }
+  }
+}'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "query_string" :{
+      "query":"elasticsearch AND -organizer:roy"
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "terms" :{
+      "tags":["big","data"]
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match_all":{}
+      },
+      "filter":{
+        "term" :{
+          "tags":"hadoop"
+        }
+      }
+    }
+  }
+}'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match" :{
+      "name":{
+        "query":"elasticsearch denver",
+        "operator":"or"
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase":{
+      "description":{
+        "query":"Come required",
+        "slop":5
+      }
+    }
+  },
+  "_source":"description"
+}'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase_prefix":{
+      "name":{
+         "query":"s",
+         "max_expansions": 2
+      }
+    }
+  },
+  "_source":"name"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "match_phrase":{
+      "description":{
+        "query":"Come required",
+        "slop":5
+      }
+    }
+  },
+  "_source":"description"
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "multi_match":{
+      "query":"elasticsearch",
+      "fields":["name","description"]
+    }
+  },
+  "_source":["name","description"]
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":[
+        {
+          "term":{
+            "members":"lee"
+          }
+        }
+      ]
+    }
+  },
+  "_source":["tags"]
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "should":[
+        {
+          "term":{
+            "members":"lee"
+          }
+        },
+        {
+          "term":{
+            "members":"daniel"
+          }
+        }
+      ],
+      "minimum_should_match":2
+    }
+  },
+  "_source":["members"]
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must_not":[
+        {
+          "term":{
+            "members":"lee"
+          }
+        }
+      ]
+    }
+  },
+  "_source":["members"]
+}'
+
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match_all":{}
+      },
+      "filter":{
+        "exists":{
+          "field":"members"
+        }
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X POST 'localhost:9200/get-together/group/3/_update' -d '{
+  "doc":{
+    "created_on":null
+  }
+}'
+
+curl -X GET 'localhost:9200/get-together/group/_search?pretty'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match_all":{}
+      },
+      "filter":{
+        "bool":{
+          "must":{
+            "exists":{
+              "field":"members"
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/group/_search?pretty' -d '{
+  "query":{
+    "bool":{
+      "must":{
+        "match_all":{}
+      },
+      "filter":{
+        "bool":{
+          "must":{
+            "exists":{
+              "field":"members"
+            }
+          }
+        }
+      }
+    }
+  }
+}'
