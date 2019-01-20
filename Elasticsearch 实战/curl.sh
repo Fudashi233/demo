@@ -1447,3 +1447,123 @@ curl -H 'content-type:application/json' -X GET 'localhost:9200/get-together/grou
     }
   }
 }'
+
+
+curl -X GET 'localhost:9200/_analyze?'
+
+curl -X GET "localhost:9200/_analyze" -H 'Content-Type: application/json' -d'
+{
+  "analyzer" : "standard",
+  "text" : "share your experience with NoSQL & big data technologies"
+}
+'
+
+curl -X GET 'localhost:9200/get-together/group/5/_termvector?pretty&fields=description'
+
+curl -H 'content-type:application/json' -X POST 'localhost:9200/get-together/group/4/_update' -d '{
+  "doc":{
+    "description":"Enterprise search get-togethers are an opportunity to get together with other people doing search.search doing doing doing"
+  }
+}'
+
+
+# 标准分词器
+curl -X GET "localhost:9200/_analyze?pretty" -H 'Content-Type: application/json' -d'
+{
+  "tokenizer" : "standard",
+  "text" : "I have, potatoes."
+}
+'
+
+# 关键词分词器
+curl -X GET "localhost:9200/_analyze?pretty" -H 'Content-Type: application/json' -d'
+{
+  "tokenizer" : "keyword",
+  "text" : "I have, potatoes."
+}
+'
+
+# 字母分词器
+curl -X GET "localhost:9200/_analyze?pretty" -H 'Content-Type: application/json' -d'
+{
+  "tokenizer" : "letter",
+  "text" : "<p>Hi, there</p>"
+}
+'
+
+# 小写分词器
+curl -X GET "localhost:9200/_analyze?pretty" -H 'Content-Type: application/json' -d'
+{
+  "tokenizer" : "lowercase",
+  "text" : "<P>Hi, there</P>"
+}
+'
+
+# 空白分词器
+curl -X GET "localhost:9200/_analyze?pretty" -H 'Content-Type: application/json' -d'
+{
+  "tokenizer" : "whitespace",
+  "text" : "<P>Hi, there</P>"
+}
+'
+
+
+curl -X PUT "localhost:9200/my_index" -H 'Content-Type: application/json' -d'
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "rebuilt_standard": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"       
+          ]
+        }
+      }
+    }
+  }
+}
+'
+
+
+curl -X DELETE 'localhost:9200/my_index'
+
+curl -X PUT "localhost:9200/my_index" -H 'Content-Type: application/json' -d'
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "analyzer1": {
+          "type":"custom",
+          "char_filter" : "char_filter1",
+          "tokenizer" : "tokenizer1",
+          "filter" : "filter1"
+        }
+      },
+      "tokenizer": {
+        "tokenizer1": {
+          "type": "lowercase"
+        }
+      },
+      "filter" : {
+        "filter1" : {
+          "type" : "standard"
+        }
+      },
+      "char_filter" : {
+        "char_filter1" : {
+          "type" : "mapping",
+          "mappings" : ["Fudashi => 付大石"]
+        }
+      }
+    }
+  }
+}
+'
+
+curl -X POST "localhost:9200/my_index/_analyze?pretty" -H 'Content-Type: application/json' -d'
+{
+  "analyzer": "analyzer1",
+  "text": "Fudashi"
+}
+'
