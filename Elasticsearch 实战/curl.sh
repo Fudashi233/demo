@@ -1542,18 +1542,21 @@ curl -X PUT "localhost:9200/my_index" -H 'Content-Type: application/json' -d'
       },
       "tokenizer": {
         "tokenizer1": {
-          "type": "lowercase"
+          "type": "whitespace"
         }
       },
       "filter" : {
         "filter1" : {
-          "type" : "standard"
+          "type" : "shingle",
+          "min_shingle_size" : 2,
+          "max_shingle_size" : 3,
+          "output_unigrams" : false
         }
       },
       "char_filter" : {
         "char_filter1" : {
           "type" : "mapping",
-          "mappings" : ["Fudashi => 付大石"]
+          "mappings" : []
         }
       }
     }
@@ -1564,6 +1567,9 @@ curl -X PUT "localhost:9200/my_index" -H 'Content-Type: application/json' -d'
 curl -X POST "localhost:9200/my_index/_analyze?pretty" -H 'Content-Type: application/json' -d'
 {
   "analyzer": "analyzer1",
-  "text": "Fudashi"
+  "text": "foo bar baz"
 }
 '
+
+
+curl -X GET 'localhost:9200/my_index'
