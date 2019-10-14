@@ -1,2 +1,2 @@
-# demo
-各种code demo.
+# Example
+学习过程中的代码示例
