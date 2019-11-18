@@ -12,9 +12,15 @@ import lombok.Data;
 @Data
 public class LoginRequestPacket extends Packet {
 
-    private String userId;
     private String username;
-    private String password;
+
+    public LoginRequestPacket() {
+
+    }
+
+    public LoginRequestPacket(String username) {
+        this.username = username;
+    }
 
     @Override
     public Integer getCommand() {

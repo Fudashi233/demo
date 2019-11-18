@@ -15,6 +15,6 @@ public class MessageResponseHandler extends SimpleChannelInboundHandler<MessageR
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageResponsePacket msg) throws Exception {
-        System.out.println(msg.getMessage());
+        System.out.printf("【单聊】【%s（%s）】%s\n", msg.getFromUsername(), msg.getFromUserId(), msg.getMessage());
     }
 }

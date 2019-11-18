@@ -6,20 +6,19 @@ import lombok.Data;
  * Desc:
  * ------------------------------------
  * Author:fulei04@meituan.com
- * Date:2019/11/5
- * Time:上午9:12
+ * Date:2019/11/17
+ * Time:下午5:55
  */
 @Data
-public class MessageResponsePacket extends Packet {
+public class GroupMessageResponsePacket extends Packet {
 
-    private String message;
-
+    private String groupId;
     private String fromUsername;
-
     private String fromUserId;
+    private String msg;
 
     @Override
     public Integer getCommand() {
-        return Command.MESSAGE_RESPONSE;
+        return Command.GROUP_MESSAGE_RESPONSE;
     }
 }

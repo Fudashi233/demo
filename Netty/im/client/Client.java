@@ -1,6 +1,9 @@
 package cn.edu.jxau.im.client;
 
 import cn.edu.jxau.im.LoginUtils;
+import cn.edu.jxau.im.SessionUtils;
+import cn.edu.jxau.im.console.ConsoleCommandManager;
+import cn.edu.jxau.im.console.LoginConsoleCommand;
 import cn.edu.jxau.im.handler.*;
 import cn.edu.jxau.im.packet.*;
 import io.netty.bootstrap.Bootstrap;
@@ -31,9 +34,11 @@ public class Client {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ClientHandler());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginResponseHandler());
+                        ch.pipeline().addLast(new GroupMessageResponseHandler());
+                        ch.pipeline().addLast(new JoinGroupResponseHandler());
+                        ch.pipeline().addLast(new CreateGroupResponseHandler());
                         ch.pipeline().addLast(new MessageResponseHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
@@ -51,70 +56,13 @@ public class Client {
     private static void startConsoleThread(Channel channel) {
         new Thread(() -> {
             while (true) {
-                if (!LoginUtils.hasLogin(channel)) {
-                    continue;
-                }
-                System.out.println("请输入消息：");
                 Scanner scanner = new Scanner(System.in);
-                String line = scanner.nextLine();
-                MessageRequestPacket messageRequestPacket = new MessageRequestPacket();
-                messageRequestPacket.setMessage(line);
-                channel.writeAndFlush(PacketCodec.encode(messageRequestPacket));
+                if (SessionUtils.hasLogin(channel)) {
+                    ConsoleCommandManager.exec(scanner, channel);
+                } else {
+                    new LoginConsoleCommand().exec(scanner, channel);
+                }
             }
         }).start();
-    }
-
-}
-
-class ClientHandler extends ChannelInboundHandlerAdapter {
-
-    //@Override
-    //public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
-    //Packet packet = PacketCodec.decode((ByteBuf) msg);
-    //System.out.println("client：" + packet);
-    //super.channelRead(ctx, msg);
-    //if (packet instanceof LoginResponsePacket) {
-    //    LoginResponsePacket loginResponsePacket = (LoginResponsePacket) packet;
-    //    if (loginResponsePacket.getSuc()) {
-    //        LoginUtils.markAsLogin(ctx.channel());
-    //    }
-    //} else if (packet instanceof MessageResponsePacket) {
-    //    MessageResponsePacket messageResponsePacket = (MessageResponsePacket) packet;
-    //    System.out.println(messageResponsePacket.getMessage());
-    //} else {
-    //    throw new RuntimeException("不支持的消息类型");
-    //}
-    //}
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-
-        LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-        loginRequestPacket.setUsername("Fudashi");
-        loginRequestPacket.setPassword("123qwe");
-        loginRequestPacket.setUserId(UUID.randomUUID().toString());
-        ByteBuf buf = PacketCodec.encode(loginRequestPacket);
-        ctx.channel().writeAndFlush(buf);
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-            throws Exception {
-        cause.printStackTrace();
-    }
-}
-
-class FirstClientHandler extends ChannelInboundHandlerAdapter {
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-
-        for (int i = 0; i < 1000; i++) {
-            MessageRequestPacket messageRequestPacket = new MessageRequestPacket();
-            messageRequestPacket.setMessage("你好，今天是：2019年11月10日，天气：晴，祝您生活愉快");
-            //ctx.channel().writeAndFlush(PacketCodec.encode(messageRequestPacket));
-            ctx.channel().writeAndFlush("你好呀，alalalal");
-        }
     }
 }

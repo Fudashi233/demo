@@ -13,9 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-        loginRequestPacket.setPassword("qweasdzxc");
-        loginRequestPacket.setUserId("10010-100012");
+        LoginRequestPacket loginRequestPacket = new LoginRequestPacket("");
         loginRequestPacket.setUsername("Fudashi233");
 
         PacketCodec packetCodec = new PacketCodec();

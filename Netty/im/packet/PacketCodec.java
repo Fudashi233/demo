@@ -78,6 +78,18 @@ public class PacketCodec {
             return MessageRequestPacket.class;
         } else if (Objects.equals(command, Command.MESSAGE_RESPONSE)) {
             return MessageResponsePacket.class;
+        } else if (Objects.equals(command, Command.CREATE_GROUP_REQUEST)) {
+            return CreateGroupRequestPacket.class;
+        } else if (Objects.equals(command, Command.CREATE_GROUP_RESPONSE)) {
+            return CreateGroupResponsePacket.class;
+        } else if (Objects.equals(command, Command.JOIN_GROUP_REQUEST)) {
+            return JoinGroupRequestPacket.class;
+        } else if (Objects.equals(command, Command.JOIN_GROUP_RESPONSE)) {
+            return JoinGroupResponsePacket.class;
+        } else if (Objects.equals(command, Command.GROUP_MESSAGE_REQUEST)) {
+            return GroupMessageRequestPacket.class;
+        } else if (Objects.equals(command, Command.GROUP_MESSAGE_RESPONSE)) {
+            return GroupMessageResponsePacket.class;
         } else {
             throw new RuntimeException("不支持的command，command=" + command);
         }

@@ -1,6 +1,8 @@
 package cn.edu.jxau.im.handler;
 
 import cn.edu.jxau.im.LoginUtils;
+import cn.edu.jxau.im.Session;
+import cn.edu.jxau.im.SessionUtils;
 import cn.edu.jxau.im.packet.LoginResponsePacket;
 import cn.edu.jxau.im.packet.MessageResponsePacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,8 +19,13 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket msg) throws Exception {
+
+        System.out.println(msg.getMsg());
         if (msg.getSuc()) {
-            LoginUtils.markAsLogin(ctx.channel());
+            Session session = new Session();
+            session.setUsername(msg.getUsername());
+            session.setUserId(msg.getUserId());
+            SessionUtils.bindSession(ctx.channel(), session);
         }
     }
 }
